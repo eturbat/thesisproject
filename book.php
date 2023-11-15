@@ -50,8 +50,8 @@ if(isset($_POST['submit'])){
         if($result->num_rows > 0){
             $msg = "<div class='alert alert-danger'>Already Booked</div>";
         }else{
-            $stmt = $mysqli->prepare("INSERT INTO bookings (name, email, date, timeslot, room, reader_one, reader_two) VALUES (?,?,?,?,?,?,?)");
-            $stmt->bind_param('sssssss', $name, $email, $date, $timeslot, $room, $reader_one, $reader_two);
+            $stmt = $mysqli->prepare("INSERT INTO bookings (name, email, date, timeslot, room, reader_one, reader_two, thesis) VALUES (?,?,?,?,?,?,?,?)");
+            $stmt->bind_param('ssssssss', $name, $email, $date, $timeslot, $room, $reader_one, $reader_two, $thesis);
 
             // if($stmt->execute()){
             //     $stmt->close();
@@ -160,7 +160,7 @@ if(isset($_POST['submit'])){
                                 </div>
                                 <div class="form-group">
                                     <label for="">Thesis Topic</label>
-                                    <textarea required name="thesis" class="form-control" readonly><?php echo htmlspecialchars($thesis); ?></textarea>
+                                    <textarea required name="thesis" class="form-control"><?php echo htmlspecialchars($thesis); ?></textarea>
                                 </div>
                                 <div class="form-group pull-right">
                                     <button class="btn btn-primary" type="submit" name="submit">Confirm Booking</button>

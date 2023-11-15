@@ -1,5 +1,30 @@
 <?php
 
+$mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
+
+// Check for database connection error
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+// Fetch the date range from the database
+$query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
+$result = $mysqli->query($query);
+
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $start_date = new DateTime($row['start_date']);
+    $end_date = new DateTime($row['end_date']);
+} else {
+    // Handle case where no dates are set
+    echo "No defense schedule dates are set.";
+    exit;
+}
+
+// Convert the start and end dates to month and year for the calendar
+$month = $start_date->format('m');
+$year = $start_date->format('Y');
+
 // if(isset($_GET['booking']) && $_GET['booking'] == 'success') {
 //     echo "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
 // }
@@ -96,15 +121,22 @@ $first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
 $second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
 $room = isset($_GET['room']) ? $_GET['room'] : '';
 
-function build_calendar($month, $year, $first_reader, $second_reader, $room) {
+function build_calendar($start_date, $end_date, $first_reader, $second_reader, $room) {
     $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
     $daysOfWeek = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+    
+    $startDateTime = new DateTime($start_date);
+    $endDateTime = new DateTime($end_date);
+
+    $month = $startDateTime->format('m');
+    $year = $startDateTime->format('Y');
+
     $firstDayOfMonth = mktime(0,0,0,$month,1,$year);
     $numberDays = date('t',$firstDayOfMonth);
+
     $dateComponents = getdate($firstDayOfMonth);
     $monthName = $dateComponents['month'];
     $dayOfWeek = $dateComponents['wday'];
-    $datetoday = date('Y-m-d');
     
     $calendar = "<table class='table table-bordered'>";
     $calendar .= "<center><h1 class='heading'>Welcome to Oral Defense Scheduling Calendar</h1></center>";
@@ -115,7 +147,6 @@ function build_calendar($month, $year, $first_reader, $second_reader, $room) {
         $calendar .= "<th class='header'>$day</th>";
     } 
 
-    $currentDay = 1;
     $calendar .= "</tr><tr>";
     
     if ($dayOfWeek > 0) { 
@@ -124,20 +155,26 @@ function build_calendar($month, $year, $first_reader, $second_reader, $room) {
         }
     }
     
-    $month = str_pad($month, 2, "0", STR_PAD_LEFT);
-
+    $currentDay = 1;
     // Fetch and process availability data
     $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, $room, $month, $year);
     $overlappingSlots = findOverlappingSlots($availabilityData);
 
     while ($currentDay <= $numberDays) {
-        if ($dayOfWeek == 7) {
-            $dayOfWeek = 0;
-            $calendar .= "</tr><tr>";
-        }
-        
         $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT);
         $date = "$year-$month-$currentDayRel";
+
+        if (new DateTime($date) < $startDateTime || new DateTime($date) > $endDateTime) {
+            if ($dayOfWeek == 7) {
+                $dayOfWeek = 0;
+                $calendar .= "</tr><tr>";
+            }
+            $calendar .= "<td class='empty'></td>";
+            $currentDay++;
+            $dayOfWeek++;
+            continue;
+        }
+        
         $dayname = strtolower(date('l', strtotime($date)));
         $eventNum = 0;
         $today = $date == date('Y-m-d') ? "today" : "";
@@ -148,7 +185,7 @@ function build_calendar($month, $year, $first_reader, $second_reader, $room) {
         elseif($dayOfWeek == 0 || $dayOfWeek == 6) {
             $calendar .= "<td class='blocked'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Weekend</button>";
         }
-        else{
+        else {
             if (isset($overlappingSlots[$date]) && count($overlappingSlots[$date]) > 0) {
                 $totalbookings = checkSlots($mysqli, $date);
                 $availableslots = count($overlappingSlots[$date]) - $totalbookings;
@@ -178,26 +215,21 @@ function build_calendar($month, $year, $first_reader, $second_reader, $room) {
         
         $currentDay++;
         $dayOfWeek++;
-    }
 
-    if ($dayOfWeek != 7) { 
-        $remainingDays = 7 - $dayOfWeek;
-        for($l = 0; $l < $remainingDays; $l++){
-            $calendar .= "<td class='empty'></td>"; 
+        if ($dayOfWeek == 7) {
+            $dayOfWeek = 0;
+            $calendar .= "</tr><tr>";
         }
     }
+
+    while ($dayOfWeek > 0 && $dayOfWeek < 7) {
+        $calendar .= "<td class='empty'></td>";
+        $dayOfWeek++;
+    }
     
-    $calendar .= "</tr>";
-    $calendar .= "</table>";
-    
-    echo $calendar;
+    $calendar .= "</tr></table>";
+    return $calendar;
 }
-
-
-//setting oral defense month
-
-$month = 4; 
-$year = 2024; 
 
 ?>
 
@@ -240,7 +272,7 @@ $year = 2024;
         <div class="row">
             <div class="col-md-12">
                 <?php
-                    echo build_calendar($month, $year, $first_reader, $second_reader, $room);
+                    echo build_calendar($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $first_reader, $second_reader, $room);
                 ?>
             </div>
         </div>
