@@ -1,4 +1,13 @@
 <?php
+
+if (isset($_GET['status'])) {
+  if ($_GET['status'] == 'roomadded') {
+      echo "<p class='alert alert-success'>New room added successfully!</p>";
+  } elseif ($_GET['status'] == 'room_error') {
+      echo "<p class='alert alert-danger'>There was an error adding the room.</p>";
+  }
+}
+
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
@@ -12,6 +21,16 @@ if ($result && $result->num_rows > 0) {
 } else {
     echo "No defense schedule dates are set.";
     exit;
+}
+
+$roomQuery = "SELECT * FROM available_rooms";
+$roomResult = $mysqli->query($roomQuery);
+
+$rooms = [];
+if ($roomResult) {
+    while ($row = $roomResult->fetch_assoc()) {
+        $rooms[] = $row;
+    }
 }
 
 $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
@@ -45,53 +64,82 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
         .timeslot-label {
             margin-left: 10px;
         }
+        .form-section {
+            margin-bottom: 100px;
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        .form-section button {
+            margin-top: 10px;
+            float: right;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Room Availability</h2>
-        <form action="submit_room_availability.php" method="post">
-            <div class="form-group">
-                <label for="room">Select Room:</label>
-                <select name="room" id="room" class="form-control">
-                    <option value="room200">Room 200</option>
-                    <option value="room205">Room 205</option>
-                </select>
-            </div>
-            
-            <div class="availability-container">
-                <?php
-                $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
-                $weekDays = [];
-                foreach ($period as $date) {
-                    // Skip weekends
-                    if ($date->format('N') >= 6) {
-                        continue;
-                    }
 
-                    $weekDays[$date->format("W")][] = $date;
-                }
+        <div class="form-section">
+            <form action="add_room.php" method="post">
+                <div class="form-group">
+                    <label for="newRoomName">Add Room (ex. Taylor Hall 200):</label>
+                    <input type="text" name="newRoomName" id="newRoomName" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
 
-                foreach ($weekDays as $weekNumber => $days) {
-                    echo "<div class='week-row'>";
-                    foreach ($days as $date) {
-                        $formattedDate = $date->format("Y-m-d");
-                        echo "<div class='date-container'>";
-                        echo "<strong>$formattedDate</strong>";
-                        foreach ($timeslots as $timeslot) {
-                            $inputName = "availability[$formattedDate][$timeslot]";
-                            echo "<div class='checkbox timeslot'><label><input type='checkbox' name='$inputName'> <span class='timeslot-label'>$timeslot</span></label></div>";
+        <div class="form-section clearfix">
+            <form action="submit_room_availability.php" method="post">
+                <div class="form-group">
+                    <label for="room">Select Room:</label>
+                    <select name="room" id="room" class="form-control">
+                        <?php foreach ($rooms as $room): ?>
+                            <option value="<?php echo htmlspecialchars($room['room_id']); ?>">
+                                <?php echo htmlspecialchars($room['room_name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="availability-container">
+                    <?php
+                    $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
+                    $weekDays = [];
+                    foreach ($period as $date) {
+                        if ($date->format('N') >= 6) {
+                            continue;
                         }
-                        echo "</div>"; // Close date container
-                    }
-                    echo "</div>"; // Close week row
-                }
-                ?>
-            </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+                        $weekDays[$date->format("W")][] = $date;
+                    }
+
+                    foreach ($weekDays as $weekNumber => $days) {
+                        echo "<div class='week-row'>";
+                        foreach ($days as $date) {
+                            $formattedDate = $date->format("Y-m-d");
+                            echo "<div class='date-container'>";
+                            echo "<strong>$formattedDate</strong>";
+                            foreach ($timeslots as $timeslot) {
+                                $inputName = "availability[$formattedDate][$timeslot]";
+                                echo "<div class='checkbox timeslot'><label><input type='checkbox' name='$inputName'> <span class='timeslot-label'>$timeslot</span></label></div>";
+                            }
+                            echo "</div>"; // Close date container
+                        }
+                        echo "</div>"; // Close week row
+                    }
+                    ?>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
-

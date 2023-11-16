@@ -26,10 +26,10 @@ $stmt->bind_param("ss", $start_date, $end_date);
 
 if ($stmt->execute()) {
     // Redirect back to admin panel with success message
-    header('Location: admin_panel.html?status=success');
+    header('Location: admin_panel.php?status=success');
 } else {
-    // Handle SQL error
-    header('Location: admin_panel.html?status=error');
+    // Handle SQL error 
+    header('Location: admin_panel.php?status=error');
 }
 
 $stmt->close();

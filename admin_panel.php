@@ -40,6 +40,53 @@ function fetchAllBookings($mysqli) {
 
     <div class="container">
         <?php
+        if (isset($_GET['status'])) {
+            $status = $_GET['status'];
+            $alertType = '';
+            $message = '';
+
+            switch ($status) {
+                case 'success':
+                    $alertType = 'alert-success';
+                    $message = 'Dates set successfully!';
+                    break;
+                case 'invalid':
+                    $alertType = 'alert-warning';
+                    $message = 'Invalid dates provided!';
+                    break;
+                case 'error':
+                    $alertType = 'alert-danger';
+                    $message = 'An error occurred while setting dates!';
+                    break;
+            }
+
+            if ($message !== '') {
+                echo "<div class='alert $alertType' role='alert'>$message</div>";
+            }
+        }
+        
+        if (isset($_GET['roomStatus'])) {
+            $roomStatus = $_GET['roomStatus'];
+            $alertType = '';
+            $message = '';
+        
+            switch ($roomStatus) {
+                case 'success':
+                    $alertType = 'alert-success';
+                    $roomName = isset($_GET['roomName']) ? urldecode($_GET['roomName']) : 'the room';
+                    $message = "Availability for $roomName set successfully!";
+                    break;
+                case 'error':
+                    $alertType = 'alert-danger';
+                    $message = 'An error occurred while setting room availability!';
+                    break;
+            }
+        
+            if ($message !== '') {
+                echo "<div class='alert $alertType' role='alert'>$message</div>";
+            }
+        }
+
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
             switch ($page) {
