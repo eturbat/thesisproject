@@ -71,7 +71,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
             margin-bottom: 0;
         }
         .form-section button {
-            margin-top: 10px;
+            margin-top: 0px;
             float: right;
         }
         .clearfix::after {
@@ -91,7 +91,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                     <label for="newRoomName">Add Room (ex. Taylor Hall 200):</label>
                     <input type="text" name="newRoomName" id="newRoomName" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="submit" class="btn btn-primary">Add Room</button>
             </form>
         </div>
 

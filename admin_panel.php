@@ -33,6 +33,7 @@ function fetchAllBookings($mysqli) {
           <li class="active"><a href="admin_panel.php">Home</a></li>
           <li><a href="admin_panel.php?page=date_range_picker">Date Range Picker</a></li>
           <li><a href="admin_panel.php?page=room_availability">Room Availability</a></li>
+          <li><a href="admin_panel.php?page=add_professor">Add Professor</a></li>
           <!-- add other admin features-->
         </ul>
       </div>
@@ -95,6 +96,9 @@ function fetchAllBookings($mysqli) {
                     break;
                 case 'room_availability':
                     include('room_availability.php');
+                    break;
+                case 'add_professor':
+                    include('add_professor.php');
                     break;
                 // Add other cases as needed
                 default:

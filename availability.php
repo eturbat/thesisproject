@@ -14,6 +14,16 @@ if ($result && $result->num_rows > 0) {
     exit;
 }
 
+$profQuery = "SELECT * FROM professor_list";
+$profResult = $mysqli->query($profQuery);
+
+$professors = [];
+if ($profResult) {
+    while ($row = $profResult->fetch_assoc()) {
+        $professors[] = $row;
+    }
+}
+
 $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
 ?>
 
@@ -48,15 +58,13 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
             <div class="form-group">
                 <label for="name">Select Professor:</label>
                 <select name="name" id="name" class="form-control">
-                    <option value="Dr. Visa">Dr. Visa</option>
-                    <option value="Dr. Palmer">Dr. Palmer</option>
-                    <option value="Dr. H. Guarnera">Dr. H. Guarnera</option>
-                    <option value="Dr. D. Guarnera">Dr. D. Guarnera</option>
-                    <option value="Dr. Montelione">Dr. Montelione</option>
-                    <option value="Dr. Musgrave">Dr. Musgrave</option>
+                    <?php foreach ($professors as $professor): ?>
+                        <option value="<?php echo htmlspecialchars($professor['name']); ?>">
+                            <?php echo htmlspecialchars($professor['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
-
             <div class="availability-container">
                 <?php
                 $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);

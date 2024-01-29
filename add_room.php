@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header('Location: admin_panel.php?page=room_availability&status=roomadded');
     } else {
         // Handle error
-        header('Location: admin_panel.php?page=room_availability.php?status=room_error');
+        header('Location: admin_panel.php?page=room_availability?status=room_error');
     }
 
     $stmt->close();

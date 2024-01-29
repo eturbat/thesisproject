@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 16, 2023 at 04:43 AM
+-- Generation Time: Jan 29, 2024 at 04:03 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.4.29
 
@@ -32,6 +32,18 @@ CREATE TABLE `available_rooms` (
   `room_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `available_rooms`
+--
+
+INSERT INTO `available_rooms` (`room_id`, `room_name`) VALUES
+(11, 'Taylor Hall 200'),
+(12, 'Taylor Hall 302'),
+(13, 'Taylor Hall 305'),
+(14, 'Taylor Hall 1'),
+(15, 'Taylor Hall 200'),
+(16, 'Taylor Hall 999');
+
 -- --------------------------------------------------------
 
 --
@@ -54,7 +66,7 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`name`, `email`, `date`, `timeslot`, `room`, `reader_one`, `reader_two`, `thesis`) VALUES
-('Turbat Enkhtur', 'tenkhtur23@wooster.edu', '2024-04-12', '13:00-13:50', 'room200', 'Dr. Visa', 'Dr. Montelione', 'Oral Defense Scheduling Full-Stack Web App');
+('Turbat Enkhtur', 'tenkhtur23@wooster.edu', '2024-04-02', '09:00-09:50', 'Taylor Hall 200', 'Dr. Visa', 'Dr. Montelione', 'Oral Defense Scheduling');
 
 -- --------------------------------------------------------
 
@@ -73,7 +85,7 @@ CREATE TABLE `defense_schedule` (
 --
 
 INSERT INTO `defense_schedule` (`id`, `start_date`, `end_date`) VALUES
-(13, '2024-04-03', '2024-04-22');
+(16, '2024-04-02', '2024-04-22');
 
 -- --------------------------------------------------------
 
@@ -88,40 +100,24 @@ CREATE TABLE `professors` (
   `timeslot` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `professors`
+-- Table structure for table `professor_list`
 --
 
-INSERT INTO `professors` (`id`, `name`, `date`, `timeslot`) VALUES
-(299, 'Dr. Visa', '2024-04-08', '09:00-09:50'),
-(300, 'Dr. Visa', '2024-04-08', '10:00-10:50'),
-(301, 'Dr. Visa', '2024-04-08', '11:00-11:50'),
-(302, 'Dr. Visa', '2024-04-08', '13:00-13:50'),
-(303, 'Dr. Visa', '2024-04-08', '15:00-15:50'),
-(304, 'Dr. Visa', '2024-04-08', '16:00-16:50'),
-(305, 'Dr. Visa', '2024-04-12', '13:00-13:50'),
-(306, 'Dr. Visa', '2024-04-12', '14:00-14:50'),
-(307, 'Dr. Visa', '2024-04-12', '15:00-15:50'),
-(308, 'Dr. Visa', '2024-04-12', '16:00-16:50'),
-(309, 'Dr. Visa', '2024-04-18', '09:00-09:50'),
-(310, 'Dr. Visa', '2024-04-18', '10:00-10:50'),
-(311, 'Dr. Visa', '2024-04-18', '11:00-11:50'),
-(312, 'Dr. Visa', '2024-04-18', '12:00-12:50'),
-(313, 'Dr. Visa', '2024-04-18', '13:00-13:50'),
-(314, 'Dr. Visa', '2024-04-18', '15:00-15:50'),
-(315, 'Dr. Visa', '2024-04-18', '16:00-16:50'),
-(316, 'Dr. Montelione', '2024-04-08', '09:00-09:50'),
-(317, 'Dr. Montelione', '2024-04-08', '10:00-10:50'),
-(318, 'Dr. Montelione', '2024-04-08', '15:00-15:50'),
-(319, 'Dr. Montelione', '2024-04-08', '16:00-16:50'),
-(320, 'Dr. Montelione', '2024-04-12', '13:00-13:50'),
-(321, 'Dr. Montelione', '2024-04-12', '15:00-15:50'),
-(322, 'Dr. Montelione', '2024-04-12', '16:00-16:50'),
-(323, 'Dr. Montelione', '2024-04-18', '09:00-09:50'),
-(324, 'Dr. Montelione', '2024-04-18', '12:00-12:50'),
-(325, 'Dr. Montelione', '2024-04-18', '13:00-13:50'),
-(326, 'Dr. Montelione', '2024-04-18', '14:00-14:50'),
-(327, 'Dr. Montelione', '2024-04-18', '16:00-16:50');
+CREATE TABLE `professor_list` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `professor_list`
+--
+
+INSERT INTO `professor_list` (`id`, `name`) VALUES
+(4, 'Dr. Visa'),
+(7, 'Dr. Montelione');
 
 -- --------------------------------------------------------
 
@@ -135,6 +131,19 @@ CREATE TABLE `rooms` (
   `date` date NOT NULL,
   `timeslot` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `rooms`
+--
+
+INSERT INTO `rooms` (`id`, `name`, `date`, `timeslot`) VALUES
+(264, 'Taylor Hall 200', '2024-04-02', '09:00-09:50'),
+(265, 'Taylor Hall 200', '2024-04-02', '10:00-10:50'),
+(266, 'Taylor Hall 302', '2024-04-03', '09:00-09:50'),
+(267, 'Taylor Hall 302', '2024-04-03', '11:00-11:50'),
+(268, 'Taylor Hall 302', '2024-04-03', '14:00-14:50'),
+(269, 'Taylor Hall 302', '2024-04-17', '12:00-12:50'),
+(270, 'Taylor Hall 302', '2024-04-17', '15:00-15:50');
 
 --
 -- Indexes for dumped tables
@@ -153,9 +162,9 @@ ALTER TABLE `defense_schedule`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `professors`
+-- Indexes for table `professor_list`
 --
-ALTER TABLE `professors`
+ALTER TABLE `professor_list`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -172,25 +181,25 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `available_rooms`
 --
 ALTER TABLE `available_rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `defense_schedule`
 --
 ALTER TABLE `defense_schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `professors`
+-- AUTO_INCREMENT for table `professor_list`
 --
-ALTER TABLE `professors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=328;
+ALTER TABLE `professor_list`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=258;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=271;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
