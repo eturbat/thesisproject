@@ -118,6 +118,7 @@ function fetchAllBookings($mysqli) {
             echo '<th>Email</th>';
             echo '<th>Date</th>';
             echo '<th>Time Slot</th>';
+            echo '<th>Room</th>';
             echo '<th>First Reader</th>';
             echo '<th>Second Reader</th>';
             echo '<th>Thesis Topic</th>';
@@ -132,6 +133,7 @@ function fetchAllBookings($mysqli) {
                 echo '<td>'.htmlspecialchars($booking['email']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['date']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['timeslot']).'</td>';
+                echo '<td>'.htmlspecialchars($booking['room']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['reader_one']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['reader_two']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['thesis']).'</td>';

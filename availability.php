@@ -1,6 +1,7 @@
 <?php
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+// Fetch the defense schedule dates
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
 $result = $mysqli->query($query);
 
@@ -14,6 +15,7 @@ if ($result && $result->num_rows > 0) {
     exit;
 }
 
+// Fetch professors
 $profQuery = "SELECT * FROM professor_list";
 $profResult = $mysqli->query($profQuery);
 
@@ -24,7 +26,20 @@ if ($profResult) {
     }
 }
 
-$timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
+// Fetch unique available timeslots across all rooms within the defense schedule dates
+$uniqueTimeslotsQuery = "SELECT DISTINCT date, timeslot FROM rooms WHERE date BETWEEN ? AND ?";
+$uniqueTimeslotsStmt = $mysqli->prepare($uniqueTimeslotsQuery);
+$startDateStr = $start_date->format('Y-m-d');
+$endDateStr = $end_date->format('Y-m-d');
+$uniqueTimeslotsStmt->bind_param("ss", $startDateStr, $endDateStr);
+$uniqueTimeslotsStmt->execute();
+$uniqueTimeslotsResult = $uniqueTimeslotsStmt->get_result();
+
+$uniqueTimeslots = [];
+while ($row = $uniqueTimeslotsResult->fetch_assoc()) {
+    $uniqueTimeslots[$row['date']][] = $row['timeslot'];
+}
+$uniqueTimeslotsStmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -37,11 +52,17 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
         .availability-container {
             margin-top: 20px;
         }
-        .date-heading {
+        .week-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .date-container {
+            flex-grow: 1;
             background-color: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-right: 10px;
         }
         .timeslot {
             margin: 5px;
@@ -67,17 +88,10 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
             </div>
             <div class="availability-container">
                 <?php
-                $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
-                foreach ($period as $date) {
-                    // Check if the day is Saturday or Sunday
-                    if ($date->format('N') >= 6) {
-                        continue; // Skip the weekend
-                    }
-
-                    $formattedDate = $date->format("Y-m-d");
-                    echo "<div class='date-heading'><strong>$formattedDate</strong></div>";
+                foreach ($uniqueTimeslots as $date => $timeslots) {
+                    echo "<div class='date-heading'><strong>$date</strong></div>";
                     foreach ($timeslots as $timeslot) {
-                        $inputName = "availability[$formattedDate][$timeslot]";
+                        $inputName = "availability[$date][$timeslot]";
                         echo "<div class='checkbox timeslot'><label><input type='checkbox' name='$inputName'> <span class='timeslot-label'>$timeslot</span></label></div>";
                     }
                 }

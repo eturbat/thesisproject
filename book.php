@@ -1,6 +1,5 @@
 <?php
 
-
 if(isset($_GET['availableSlots'])) {
     $availableSlots = explode(',', $_GET['availableSlots']);
     echo "<pre>Available Slots: ";
@@ -15,21 +14,41 @@ $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 $thesis = isset($_GET['thesis']) ? $_GET['thesis'] : '';
 $name = isset($_GET['name']) ? $_GET['name'] : '';
 $email = isset($_GET['email']) ? $_GET['email'] : '';
+$date = isset($_GET['date']) ? $_GET['date'] : '';
+$first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
+$second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
 
+$bookings = array();
+
+
+// Fetch intersected availability for selected professors
+$intersectedAvailabilityQuery = "SELECT r.name, r.timeslot FROM rooms r
+                                  JOIN professors p1 ON r.date = p1.date AND r.timeslot = p1.timeslot AND p1.name = ?
+                                  JOIN professors p2 ON r.date = p2.date AND r.timeslot = p2.timeslot AND p2.name = ?
+                                  WHERE r.date = ?";
+$stmt = $mysqli->prepare($intersectedAvailabilityQuery);
+$stmt->bind_param('sss', $first_reader, $second_reader, $date);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$roomsAvailability = [];
+while ($row = $result->fetch_assoc()) {
+    $roomsAvailability[$row['name']][] = $row['timeslot'];
+}
+$stmt->close();
 
 if(isset($_GET['date'])){
     $date = $_GET['date'];
     $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE date = ?");
     $stmt->bind_param('s', $date);
-    $bookings = array();
     if($stmt->execute()){
         $result = $stmt->get_result();
         if($result->num_rows > 0){
             while($row = $result->fetch_assoc()){
                 $bookings[] = $row['timeslot'];
             }
-            $stmt->close();
         }
+        $stmt->close();
     }
 }
 
@@ -62,7 +81,7 @@ if(isset($_POST['submit'])){
             
             $stmt->execute();
             $msg = "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
-            $msg .= "<a href='schedule.php?&thesis=".$thesis."&name=".$name."&email=".$email."&first_reader=".$reader_one."&second_reader=".$reader_two."&room=".$room."' class='btn btn-info'>Go Back</a>";
+            $msg .= "<a href='schedule.php?&thesis=".$thesis."&name=".$name."&email=".$email."&first_reader=".$reader_one."&second_reader=".$reader_two."' class='btn btn-info'>Go Back</a>";
             $bookings[] = $timeslot;
             $stmt->close();
             $mysqli->close();
@@ -86,35 +105,33 @@ if(isset($_POST['submit'])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
   </head>
-
   <body>
-  <div class="container">
-        <h1 class="text-center">Please choose available slot on <?php echo date('m/d/Y', strtotime($date)); ?></h1><hr>
-        <div>
-            <?php echo isset($msg)?$msg:"";?>
-        </div>
-        <div class="row">
-        <?php 
-        foreach($availableSlots as $ts) {
-            ?>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <?php if(in_array($ts, $bookings)) { ?>
-                        <button class="btn btn-danger"> 
-                            <?php echo $ts; ?>
-                        </button>
-                    <?php } else { ?>
-                        <button class="btn btn-success book" data-timeslot="<?php echo $ts; ?>">
-                            <?php echo $ts; ?>
-                        </button>
-                    <?php } ?>
-                </div>
+    <div class="container">
+            <h1 class="text-center">Please choose available slot on <?php echo date('m/d/Y', strtotime($date)); ?></h1><hr>
+            <div>
+                <?php echo isset($msg) ? $msg : ""; ?>
             </div>
-            <?php 
-        } 
-        ?>
+            <?php foreach ($roomsAvailability as $roomName => $timeslots): ?>
+                <div class="row">
+                    <h3><?php echo htmlspecialchars($roomName); ?></h3>
+                    <?php foreach ($timeslots as $ts): ?>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <?php if(in_array($ts, $bookings)) { ?>
+                                    <button class="btn btn-danger"> 
+                                        <?php echo $ts; ?>
+                                    </button>
+                                <?php } else { ?>
+                                    <button class="btn btn-success book" data-timeslot="<?php echo $ts; ?>" data-room="<?php echo htmlspecialchars($roomName); ?>">
+                                        <?php echo $ts; ?>
+                                    </button>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
         </div>
-    </div>
     <div class="modal" id="myModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -140,7 +157,7 @@ if(isset($_POST['submit'])){
                                 </div>
                                 <div class="form-group">
                                     <label for="">Room Number</label>
-                                    <input required type="text" name="room" class="form-control" value="<?php echo htmlspecialchars($_GET['room']); ?>" readonly>
+                                    <input required type="text" readonly name="room" id="room" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="">Reader One</label>
@@ -178,8 +195,10 @@ if(isset($_POST['submit'])){
     <script>
         $(".book").click(function(){
             var timeslot = $(this).attr('data-timeslot');
+            var room = $(this).attr('data-room');
             $("#slot").html(timeslot);
             $("#timeslot").val(timeslot);
+            $("#room").val(room);
             $("input[name='name']").val("<?php echo addslashes($name); ?>");
             $("input[name='email']").val("<?php echo addslashes($email); ?>");
             $("textarea[name='thesis']").val("<?php echo addslashes($thesis); ?>");

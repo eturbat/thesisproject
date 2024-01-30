@@ -3,17 +3,15 @@ $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
 // Fetch professors and rooms for dropdowns
 $professors = [];
-$rooms = [];
-
 $result = $mysqli->query("SELECT DISTINCT name FROM professors");
 while ($row = $result->fetch_assoc()) {
     $professors[] = $row['name'];
 }
 
-$result = $mysqli->query("SELECT DISTINCT name FROM rooms");
-while ($row = $result->fetch_assoc()) {
-    $rooms[] = $row['name'];
-}
+// $result = $mysqli->query("SELECT DISTINCT name FROM rooms");
+// while ($row = $result->fetch_assoc()) {
+//     $rooms[] = $row['name'];
+// }
 ?>
 
 <!DOCTYPE html>
@@ -54,14 +52,6 @@ while ($row = $result->fetch_assoc()) {
                 <select class="form-control" id="second_reader" name="second_reader" required>
                     <?php foreach($professors as $professor): ?>
                         <option value="<?php echo $professor; ?>"><?php echo $professor; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="room">Room:</label>
-                <select class="form-control" id="room" name="room" required>
-                    <?php foreach($rooms as $room): ?>
-                        <option value="<?php echo $room; ?>"><?php echo $room; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

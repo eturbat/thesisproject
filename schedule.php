@@ -29,10 +29,9 @@ $year = $start_date->format('Y');
 //     echo "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
 // }
 
-function getAvailabilityData($mysqli, $first_reader, $second_reader, $room, $month, $year) {
+function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $year) {
     $availabilityData = [
-        'professors' => [],
-        'rooms' => []
+        'professors' => []
     ];
 
     // Fetch availability for first reader
@@ -58,16 +57,16 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $room, $mon
     }
     $stmt->close();
 
-    // Fetch availability for room
-    $stmt = $mysqli->prepare("SELECT date, timeslot FROM rooms WHERE name=? AND MONTH(date)=? AND YEAR(date)=?");
-    $stmt->bind_param("sii", $room, $month, $year);
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) {
-            $availabilityData['rooms'][$row['date']][] = $row['timeslot'];
-        }
-    }
-    $stmt->close();
+    // // Fetch availability for room
+    // $stmt = $mysqli->prepare("SELECT date, timeslot FROM rooms WHERE name=? AND MONTH(date)=? AND YEAR(date)=?");
+    // $stmt->bind_param("sii", $room, $month, $year);
+    // if ($stmt->execute()) {
+    //     $result = $stmt->get_result();
+    //     while ($row = $result->fetch_assoc()) {
+    //         $availabilityData['rooms'][$row['date']][] = $row['timeslot'];
+    //     }
+    // }
+    // $stmt->close();
 
     echo "<pre>Availability Data: ";
     print_r($availabilityData);
@@ -76,19 +75,18 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $room, $mon
     return $availabilityData;
 }
 
-function findOverlappingSlots($availabilityData) {
+
+function findOverlappingSlots($availabilityData, $first_reader, $second_reader) {
     $overlappingSlots = [];
 
-    foreach ($availabilityData['professors'] as $professor => $dates) {
-        foreach ($dates as $date => $timeslots) {
-            if (isset($availabilityData['rooms'][$date])) {
-                $overlap = array_intersect($timeslots, $availabilityData['rooms'][$date]);
+    // Only compare availability between first and second readers
+    if (isset($availabilityData['professors'][$first_reader]) && isset($availabilityData['professors'][$second_reader])) {
+        foreach ($availabilityData['professors'][$first_reader] as $date => $firstReaderSlots) {
+            if (isset($availabilityData['professors'][$second_reader][$date])) {
+                $secondReaderSlots = $availabilityData['professors'][$second_reader][$date];
+                $overlap = array_intersect($firstReaderSlots, $secondReaderSlots);
                 if (!empty($overlap)) {
-                    if (!isset($overlappingSlots[$date])) {
-                        $overlappingSlots[$date] = $overlap;
-                    } else {
-                        $overlappingSlots[$date] = array_intersect($overlappingSlots[$date], $overlap);
-                    }
+                    $overlappingSlots[$date] = $overlap;
                 }
             }
         }
@@ -100,6 +98,11 @@ function findOverlappingSlots($availabilityData) {
 
     return $overlappingSlots;
 }
+
+$first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
+$second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
+$room = isset($_GET['room']) ? $_GET['room'] : '';
+
 
 function checkSlots($mysqli, $date){
     $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE date=?");
@@ -116,10 +119,6 @@ function checkSlots($mysqli, $date){
     }
     return $totalbookings;
 }
-
-$first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
-$second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
-$room = isset($_GET['room']) ? $_GET['room'] : '';
 
 function build_calendar($start_date, $end_date, $first_reader, $second_reader, $room) {
     $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
@@ -157,8 +156,8 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
     
     $currentDay = 1;
     // Fetch and process availability data
-    $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, $room, $month, $year);
-    $overlappingSlots = findOverlappingSlots($availabilityData);
+    $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $year);
+    $overlappingSlots = findOverlappingSlots($availabilityData, $first_reader, $second_reader);
 
     while ($currentDay <= $numberDays) {
         $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT);
@@ -199,7 +198,7 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
                     $calendar .= "
                     <td class='$today'>
                         <h4>$currentDay</h4> 
-                            <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."&room=".$room."&availableSlots=".$availableSlotsString."&thesis=".$thesis."&name=".$name."&email=".$email."' class='btn btn-success btn-xs'>
+                            <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."&availableSlots=".$availableSlotsString."&thesis=".$thesis."&name=".$name."&email=".$email."' class='btn btn-success btn-xs'>
                                 Book
                             </a>
                     <small><i>$availableslots slots left</i></small>";
