@@ -39,7 +39,7 @@ CREATE TABLE `available_rooms` (
 INSERT INTO `available_rooms` (`room_id`, `room_name`) VALUES
 (18, 'Taylor Hall 200'),
 (19, 'Taylor Hall 300'),
-(20, 'Taylor Hall 205'); 
+(20, 'Taylor Hall 205');
 
 -- --------------------------------------------------------
 
