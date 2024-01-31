@@ -18,9 +18,6 @@ $date = isset($_GET['date']) ? $_GET['date'] : '';
 $first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
 $second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
 
-$bookings = array();
-
-
 // Fetch intersected availability for selected professors
 $intersectedAvailabilityQuery = "SELECT r.name, r.timeslot FROM rooms r
                                   JOIN professors p1 ON r.date = p1.date AND r.timeslot = p1.timeslot AND p1.name = ?
@@ -37,20 +34,19 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-if(isset($_GET['date'])){
-    $date = $_GET['date'];
-    $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE date = ?");
-    $stmt->bind_param('s', $date);
-    if($stmt->execute()){
-        $result = $stmt->get_result();
-        if($result->num_rows > 0){
-            while($row = $result->fetch_assoc()){
-                $bookings[] = $row['timeslot'];
-            }
-        }
-        $stmt->close();
-    }
+// Fetch bookings for the selected professors on the chosen date
+$professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one = ? OR reader_two = ?)";
+$stmt = $mysqli->prepare($professorBookingsQuery);
+$stmt->bind_param('sss', $date, $first_reader, $second_reader);
+$stmt->execute();
+$professorBookingsResult = $stmt->get_result();
+
+$professorBookings = [];
+while ($row = $professorBookingsResult->fetch_assoc()) {
+    $professorBookings[] = $row['timeslot'];
 }
+$stmt->close();
+
 
 if(isset($_POST['submit'])){
     $thesis = $_POST['thesis'];
@@ -61,33 +57,36 @@ if(isset($_POST['submit'])){
     $room = $_POST['room'];
     $reader_one = $_POST['reader_one'];
     $reader_two = $_POST['reader_two'];
-    
-    $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE date=? AND timeslot=?");
-    $stmt->bind_param('ss', $date, $timeslot);
+
+    // Check if any of the selected professors are already booked for this timeslot
+    $professorBookedQuery = "SELECT * FROM bookings WHERE date=? AND timeslot=? AND (reader_one=? OR reader_two=?)";
+    $stmt = $mysqli->prepare($professorBookedQuery);
+    $stmt->bind_param('ssss', $date, $timeslot, $reader_one, $reader_two);
     if($stmt->execute()){
         $result = $stmt->get_result();
         if($result->num_rows > 0){
-            $msg = "<div class='alert alert-danger'>Already Booked</div>";
-        }else{
+            $msg = "<div class='alert alert-danger'>One or more professors are not available at this time.</div>";
+        } else {
+            // Proceed with booking
             $stmt = $mysqli->prepare("INSERT INTO bookings (name, email, date, timeslot, room, reader_one, reader_two, thesis) VALUES (?,?,?,?,?,?,?,?)");
             $stmt->bind_param('ssssssss', $name, $email, $date, $timeslot, $room, $reader_one, $reader_two, $thesis);
-
-            // if($stmt->execute()){
-            //     $stmt->close();
-            //     $mysqli->close();
-            //     header("Location: schedule.php?booking=success");
-            //     exit;
-            // }
             
-            $stmt->execute();
-            $msg = "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
-            $msg .= "<a href='schedule.php?&thesis=".$thesis."&name=".$name."&email=".$email."&first_reader=".$reader_one."&second_reader=".$reader_two."' class='btn btn-info'>Go Back</a>";
-            $bookings[] = $timeslot;
+            if($stmt->execute()){
+                $msg = "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
+                // Additional code if needed
+            } else {
+                // Handle error in booking
+                $msg = "<div class='alert alert-danger'>Error in booking</div>";
+            }
             $stmt->close();
-            $mysqli->close();
         }
+    } else {
+        // Handle error in query execution
+        $msg = "<div class='alert alert-danger'>Error in query execution</div>";
     }
+    $mysqli->close();
 }
+
 
 ?>
 
@@ -117,13 +116,13 @@ if(isset($_POST['submit'])){
                     <?php foreach ($timeslots as $ts): ?>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <?php if(in_array($ts, $bookings)) { ?>
-                                    <button class="btn btn-danger"> 
-                                        <?php echo $ts; ?>
+                                <?php if(in_array($ts, $professorBookings)) { ?>
+                                    <button class="btn btn-danger disabled" disabled> 
+                                        <?php echo $ts; ?> (Unavailable)
                                     </button>
                                 <?php } else { ?>
                                     <button class="btn btn-success book" data-timeslot="<?php echo $ts; ?>" data-room="<?php echo htmlspecialchars($roomName); ?>">
-                                        <?php echo $ts; ?>
+                                        <?php echo $ts; ?> (Available)
                                     </button>
                                 <?php } ?>
                             </div>
