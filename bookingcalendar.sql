@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 30, 2024 at 02:36 AM
+-- Generation Time: Feb 01, 2024 at 08:11 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.4.29
 
@@ -57,6 +57,16 @@ CREATE TABLE `bookings` (
   `reader_two` varchar(255) NOT NULL,
   `thesis` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`name`, `email`, `date`, `timeslot`, `room`, `reader_one`, `reader_two`, `thesis`) VALUES
+('test', 'test@gmail.com', '2024-04-04', '12:00-12:50', 'Taylor Hall 300', 'Dr. Guarnera', 'Dr. Heather', 'test'),
+('test2', 'test2@gmail.com', '2024-04-04', '16:00-16:50', 'Taylor Hall 200', 'Dr. Montelione', 'Dr. Heather', 'test2'),
+('test3', 'test3@gmail.com', '2024-04-04', '12:00-12:50', 'Taylor Hall 200', 'Dr. Montelione', 'Dr. Visa', 'test3'),
+('test4', 'test4@gmail.com', '2024-04-04', '16:00-16:50', 'Taylor Hall 300', 'Dr. Visa', 'Dr. Palmer', 'test4');
 
 -- --------------------------------------------------------
 
@@ -170,7 +180,12 @@ INSERT INTO `professors` (`id`, `name`, `date`, `timeslot`) VALUES
 (86, 'Dr. Heather', '2024-04-04', '16:00-16:50'),
 (87, 'Dr. Heather', '2024-04-04', '10:00-10:50'),
 (88, 'Dr. Heather', '2024-04-04', '14:00-14:50'),
-(89, 'Dr. Heather', '2024-04-04', '09:00-09:50');
+(89, 'Dr. Heather', '2024-04-04', '09:00-09:50'),
+(90, 'Dr. Palmer', '2024-04-04', '11:00-11:50'),
+(91, 'Dr. Palmer', '2024-04-04', '12:00-12:50'),
+(92, 'Dr. Palmer', '2024-04-04', '15:00-15:50'),
+(93, 'Dr. Palmer', '2024-04-04', '16:00-16:50'),
+(94, 'Dr. Palmer', '2024-04-04', '14:00-14:50');
 
 -- --------------------------------------------------------
 
@@ -191,7 +206,8 @@ INSERT INTO `professor_list` (`id`, `name`) VALUES
 (15, 'Dr. Montelione'),
 (16, 'Dr. Visa'),
 (17, 'Dr. Guarnera'),
-(18, 'Dr. Heather');
+(18, 'Dr. Heather'),
+(19, 'Dr. Palmer');
 
 -- --------------------------------------------------------
 
@@ -492,13 +508,13 @@ ALTER TABLE `defense_schedule`
 -- AUTO_INCREMENT for table `professors`
 --
 ALTER TABLE `professors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `professor_list`
 --
 ALTER TABLE `professor_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `rooms`
