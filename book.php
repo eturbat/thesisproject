@@ -34,19 +34,39 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Fetch bookings for the selected professors on the chosen date
-$professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one = ? OR reader_two = ?)";
+$professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
 $stmt = $mysqli->prepare($professorBookingsQuery);
-$stmt->bind_param('sss', $date, $first_reader, $second_reader);
+$stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
 $stmt->execute();
 $professorBookingsResult = $stmt->get_result();
 
-$professorBookings = [];
+$professorBookedSlots = [];
 while ($row = $professorBookingsResult->fetch_assoc()) {
-    $professorBookings[] = $row['timeslot'];
+    $professorBookedSlots[] = $row['timeslot'];
 }
 $stmt->close();
 
+$bookings = [];
+
+// Fetch bookings for the selected date
+$bookingsQuery = "SELECT room, timeslot FROM bookings WHERE date = ?";
+$stmt = $mysqli->prepare($bookingsQuery);
+$stmt->bind_param('s', $date);
+$stmt->execute();
+$bookingsResult = $stmt->get_result();
+
+while ($row = $bookingsResult->fetch_assoc()) {
+    $bookings[$row['room']][] = $row['timeslot'];
+}
+$stmt->close();
+
+
+// Remove booked slots from available slots
+foreach ($roomsAvailability as $roomName => &$timeslots) {
+    if (isset($bookedSlots[$roomName])) {
+        $timeslots = array_diff($timeslots, $bookedSlots[$roomName]);
+    }
+}
 
 if(isset($_POST['submit'])){
     $thesis = $_POST['thesis'];
@@ -111,25 +131,25 @@ if(isset($_POST['submit'])){
                 <?php echo isset($msg) ? $msg : ""; ?>
             </div>
             <?php foreach ($roomsAvailability as $roomName => $timeslots): ?>
-                <div class="row">
-                    <h3><?php echo htmlspecialchars($roomName); ?></h3>
-                    <?php foreach ($timeslots as $ts): ?>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <?php if(in_array($ts, $professorBookings)) { ?>
-                                    <button class="btn btn-danger disabled" disabled> 
-                                        <?php echo $ts; ?> (Unavailable)
-                                    </button>
-                                <?php } else { ?>
-                                    <button class="btn btn-success book" data-timeslot="<?php echo $ts; ?>" data-room="<?php echo htmlspecialchars($roomName); ?>">
-                                        <?php echo $ts; ?> (Available)
-                                    </button>
-                                <?php } ?>
-                            </div>
+            <div class="row">
+                <h3><?php echo htmlspecialchars($roomName); ?></h3>
+                <?php foreach ($timeslots as $ts): ?>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <?php
+                            if (in_array($ts, $bookings[$roomName] ?? [])) {
+                                echo "<button class='btn btn-danger disabled' disabled> $ts (Booked)</button>";
+                            } elseif (in_array($ts, $professorBookedSlots)) {
+                                echo "<button class='btn btn-danger disabled' disabled> $ts (Reader(s) unavailable)</button>";
+                            } else {
+                                echo "<button class='btn btn-success book' data-timeslot='$ts' data-room='".htmlspecialchars($roomName)."'> $ts (Available)</button>";
+                            }
+                            ?>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endforeach; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
         </div>
     <div class="modal" id="myModal">
         <div class="modal-dialog">
