@@ -21,7 +21,24 @@ function fetchAllBookings($mysqli) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <title>Admin Panel</title>
-    <!-- Add any additional head content here -->
+    <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <style>
+        #bookingsTable {
+            margin: 20px auto; /* Center table and add margin */
+            width: 95%; /* Adjust width */
+        }
+        #bookingsTable table {
+            font-size: 0.8em; /* Make table text smaller */
+            border-collapse: collapse; /* Collapse borders */
+        }
+        #bookingsTable th, #bookingsTable td {
+            padding: 8px; /* Add padding */
+            border: 1px solid #ddd; /* Add border */
+        }
+        #bookingsTable th {
+            background-color: #f2f2f2; /* Header background color */
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-inverse">
@@ -108,10 +125,11 @@ function fetchAllBookings($mysqli) {
                     break;
             }
         } else {
-            echo "<h3>Welcome to the Admin Panel</h3>";
+            echo '<div id="bookingsTable" class="table-responsive">'; 
 
+            echo "<h3>Welcome to the Admin Panel</h3>";
+            
             $allBookings = fetchAllBookings($mysqli);
-            echo '<div class="table-responsive">';
             echo '<table class="table table-bordered">';
             echo '<thead>';
             echo '<tr>';
@@ -146,6 +164,13 @@ function fetchAllBookings($mysqli) {
             echo '</div>';
         }
         ?>
+        <button onclick="generatePDF()">Download PDF</button>
     </div>
+    <script>
+        function generatePDF() {
+            const element = document.getElementById("bookingsTable");
+            html2pdf().from(element).save("bookings-list.pdf");
+        }
+    </script>
 </body>
 </html>
