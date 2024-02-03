@@ -262,9 +262,9 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
 
                 if ($availableSlotsCount > 0) {
                     $calendar .= "<td class='$today'><h4>$currentDay</h4> 
-                                  <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."' class='btn btn-success btn-xs'>
-                                      Book
-                                  </a>
+                                    <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."&thesis=".$thesis."&name=".$name."&email=".$email."' class='btn btn-success btn-xs'>
+                                        Book
+                                    </a>
                                   <small><i>$availableSlotsCount slots left</i></small></td>";
                 } else {
                     $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Not Available</button></td>";
