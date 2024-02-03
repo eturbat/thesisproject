@@ -104,20 +104,87 @@ $second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
 $room = isset($_GET['room']) ? $_GET['room'] : '';
 
 
-function checkSlots($mysqli, $date){
-    $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE date=?");
+// function checkSlots($mysqli, $date, $first_reader, $second_reader) {
+//     // Fetch all slots where either professor is booked
+//     $professorBookedQuery = "SELECT timeslot FROM bookings WHERE date=? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
+//     $stmt = $mysqli->prepare($professorBookedQuery);
+//     $stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
+//     $stmt->execute();
+//     $result = $stmt->get_result();
+    
+//     $bookedSlots = [];
+//     while ($row = $result->fetch_assoc()) {
+//         $bookedSlots[] = $row['timeslot'];
+//     }
+//     $stmt->close();
+
+//     // Assuming getAvailabilityData() fetches all available slots for both professors
+//     $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, date('m', strtotime($date)), date('Y', strtotime($date)));
+//     $overlappingSlots = findOverlappingSlots($availabilityData, $first_reader, $second_reader);
+
+//     // Calculate available slots by removing booked slots from overlapping slots
+//     if (isset($overlappingSlots[$date])) {
+//         $availableSlots = array_diff($overlappingSlots[$date], $bookedSlots);
+//         return count($availableSlots);
+//     }
+
+//     return 0; // Return 0 if no overlapping slots or all slots are booked
+// }
+
+function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
+    // Fetch intersected availability for selected professors
+    $intersectedAvailabilityQuery = "SELECT r.name, r.timeslot FROM rooms r
+                                     JOIN professors p1 ON r.date = p1.date AND r.timeslot = p1.timeslot AND p1.name = ?
+                                     JOIN professors p2 ON r.date = p2.date AND r.timeslot = p2.timeslot AND p2.name = ?
+                                     WHERE r.date = ?";
+    $stmt = $mysqli->prepare($intersectedAvailabilityQuery);
+    $stmt->bind_param('sss', $first_reader, $second_reader, $date);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $roomsAvailability = [];
+    while ($row = $result->fetch_assoc()) {
+        $roomsAvailability[$row['name']][] = $row['timeslot'];
+    }
+    $stmt->close();
+
+    // Fetch bookings for the selected date to identify booked slots
+    $bookingsQuery = "SELECT room, timeslot FROM bookings WHERE date = ?";
+    $stmt = $mysqli->prepare($bookingsQuery);
     $stmt->bind_param('s', $date);
-    $totalbookings = 0;
-    if($stmt->execute()){
-        $result = $stmt->get_result();
-        if($result->num_rows > 0){
-            while($row = $result->fetch_assoc()){
-                $totalbookings++;
+    $stmt->execute();
+    $bookingsResult = $stmt->get_result();
+
+    $bookedSlots = [];
+    while ($row = $bookingsResult->fetch_assoc()) {
+        $bookedSlots[$row['room']][] = $row['timeslot'];
+    }
+    $stmt->close();
+
+    // Fetch all bookings for the selected date to identify slots where selected professors are unavailable
+    $professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
+    $stmt = $mysqli->prepare($professorBookingsQuery);
+    $stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
+    $stmt->execute();
+    $professorBookingsResult = $stmt->get_result();
+
+    $professorUnavailableSlots = [];
+    while ($row = $professorBookingsResult->fetch_assoc()) {
+        $professorUnavailableSlots[] = $row['timeslot'];
+    }
+    $stmt->close();
+
+    // Calculate available slots excluding slots where selected professors are unavailable
+    $totalAvailableSlots = 0;
+    foreach ($roomsAvailability as $roomName => $timeslots) {
+        foreach ($timeslots as $timeslot) {
+            if ((!isset($bookedSlots[$roomName]) || !in_array($timeslot, $bookedSlots[$roomName])) && !in_array($timeslot, $professorUnavailableSlots)) {
+                $totalAvailableSlots++;
             }
         }
-        $stmt->close();
     }
-    return $totalbookings;
+
+    return $totalAvailableSlots;
 }
 
 function build_calendar($start_date, $end_date, $first_reader, $second_reader, $room) {
@@ -186,24 +253,21 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
         }
         else {
             if (isset($overlappingSlots[$date]) && count($overlappingSlots[$date]) > 0) {
-                $totalbookings = checkSlots($mysqli, $date);
-                $availableslots = count($overlappingSlots[$date]) - $totalbookings;
-                $availableSlotsString = implode(',', $overlappingSlots[$date]);
+                $availableSlotsCount = getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader);
+
 
                 $thesis = isset($_GET['thesis']) ? $_GET['thesis'] : '';
                 $name = isset($_GET['name']) ? $_GET['name'] : '';
                 $email = isset($_GET['email']) ? $_GET['email'] : '';
 
-                if ($availableslots > 0) {
-                    $calendar .= "
-                    <td class='$today'>
-                        <h4>$currentDay</h4> 
-                            <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."&availableSlots=".$availableSlotsString."&thesis=".$thesis."&name=".$name."&email=".$email."' class='btn btn-success btn-xs'>
-                                Book
-                            </a>
-                    <small><i>$availableslots slots left</i></small>";
+                if ($availableSlotsCount > 0) {
+                    $calendar .= "<td class='$today'><h4>$currentDay</h4> 
+                                  <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."' class='btn btn-success btn-xs'>
+                                      Book
+                                  </a>
+                                  <small><i>$availableSlotsCount slots left</i></small></td>";
                 } else {
-                    $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>All Booked</button>";
+                    $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Not Available</button></td>";
                 }
             } else {
                 $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Not Available</button>";

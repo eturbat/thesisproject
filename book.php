@@ -61,12 +61,12 @@ while ($row = $bookingsResult->fetch_assoc()) {
 $stmt->close();
 
 
-// Remove booked slots from available slots
-foreach ($roomsAvailability as $roomName => &$timeslots) {
-    if (isset($bookedSlots[$roomName])) {
-        $timeslots = array_diff($timeslots, $bookedSlots[$roomName]);
-    }
-}
+// // Remove booked slots from available slots
+// foreach ($roomsAvailability as $roomName => &$timeslots) {
+//     if (isset($bookedSlots[$roomName])) {
+//         $timeslots = array_diff($timeslots, $bookedSlots[$roomName]);
+//     }
+// }
 
 if(isset($_POST['submit'])){
     $thesis = $_POST['thesis'];

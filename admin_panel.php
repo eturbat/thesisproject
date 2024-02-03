@@ -34,7 +34,7 @@ function fetchAllBookings($mysqli) {
           <li><a href="admin_panel.php?page=date_range_picker">Date Range Picker</a></li>
           <li><a href="admin_panel.php?page=room_availability">Room Availability</a></li>
           <li><a href="admin_panel.php?page=add_professor">Add Professor</a></li>
-          <!-- add other admin features-->
+          <li><a href="admin_panel.php?page=password_management">Password Management</a></li>
         </ul>
       </div>
     </nav>
@@ -100,7 +100,9 @@ function fetchAllBookings($mysqli) {
                 case 'add_professor':
                     include('add_professor.php');
                     break;
-                // Add other cases as needed
+                case 'password_management':
+                    include('password_management.php');
+                    break;
                 default:
                     echo "<h3>Welcome to the Admin Panel</h3>";
                     break;

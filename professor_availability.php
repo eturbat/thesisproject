@@ -1,4 +1,12 @@
 <?php
+
+session_start();
+
+if (!isset($_SESSION['professor_logged_in'])) {
+    header('Location: professor_login.php');
+    exit;
+}
+
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
 // Fetch the defense schedule dates
