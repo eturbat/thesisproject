@@ -63,6 +63,7 @@ while ($row = $fetchResult->fetch_assoc()) {
         }
         .field-icon {
             float: right;
+            left: -10px;
             margin-left: -25px;
             margin-top: -25px;
             position: relative;
@@ -70,8 +71,8 @@ while ($row = $fetchResult->fetch_assoc()) {
         }
         .submit-btn {
             display: block;
-            width: 100%; /* Full width of the form group */
-            margin: 10px auto; /* Center the button horizontally */
+            width: 100%;
+            margin: 10px auto;
             background-color: #007bff;
             color: white;
             border: none;
@@ -84,14 +85,14 @@ while ($row = $fetchResult->fetch_assoc()) {
         }
         .panel-form {
             padding: 10px;
-            border: 1px solid #ddd; /* Optional: adds a border around the form */
-            border-radius: 5px; /* Optional: rounds the corners of the form */
-            margin: 0 10px; /* Adds spacing between the forms */
+            border: 1px solid #ddd;
+            border-radius: 5px; 
+            margin: 0 10px;
         }
         .row.centered-forms {
-            justify-content: center; /* Center the forms horizontally */
+            justify-content: center;
             display: flex;
-            flex-wrap: wrap; /* Allows forms to wrap on smaller screens */
+            flex-wrap: wrap;
         }
     </style>
     <title>Password Management</title>
