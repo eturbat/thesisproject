@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 01, 2024 at 08:11 PM
+-- Generation Time: Feb 03, 2024 at 04:31 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.4.29
 
@@ -66,7 +66,8 @@ INSERT INTO `bookings` (`name`, `email`, `date`, `timeslot`, `room`, `reader_one
 ('test', 'test@gmail.com', '2024-04-04', '12:00-12:50', 'Taylor Hall 300', 'Dr. Guarnera', 'Dr. Heather', 'test'),
 ('test2', 'test2@gmail.com', '2024-04-04', '16:00-16:50', 'Taylor Hall 200', 'Dr. Montelione', 'Dr. Heather', 'test2'),
 ('test3', 'test3@gmail.com', '2024-04-04', '12:00-12:50', 'Taylor Hall 200', 'Dr. Montelione', 'Dr. Visa', 'test3'),
-('test4', 'test4@gmail.com', '2024-04-04', '16:00-16:50', 'Taylor Hall 300', 'Dr. Visa', 'Dr. Palmer', 'test4');
+('test4', 'test4@gmail.com', '2024-04-04', '16:00-16:50', 'Taylor Hall 300', 'Dr. Visa', 'Dr. Palmer', 'test4'),
+('Turbat Enkhtur', 'enkhturbat6@gmail.com', '2024-04-01', '09:00-09:50', 'Taylor Hall 205', 'Dr. Visa', 'Dr. Heather', 'thesis');
 
 -- --------------------------------------------------------
 
@@ -86,6 +87,25 @@ CREATE TABLE `defense_schedule` (
 
 INSERT INTO `defense_schedule` (`id`, `start_date`, `end_date`) VALUES
 (20, '2024-04-01', '2024-04-26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `panel_passwords`
+--
+
+CREATE TABLE `panel_passwords` (
+  `panel` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `panel_passwords`
+--
+
+INSERT INTO `panel_passwords` (`panel`, `password`) VALUES
+('professor', '12'),
+('student', '123');
 
 -- --------------------------------------------------------
 
@@ -469,6 +489,12 @@ ALTER TABLE `available_rooms`
 --
 ALTER TABLE `defense_schedule`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `panel_passwords`
+--
+ALTER TABLE `panel_passwords`
+  ADD PRIMARY KEY (`panel`);
 
 --
 -- Indexes for table `professors`
