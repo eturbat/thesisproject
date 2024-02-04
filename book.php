@@ -92,8 +92,8 @@ if(isset($_POST['submit'])){
             $stmt->bind_param('ssssssss', $name, $email, $date, $timeslot, $room, $reader_one, $reader_two, $thesis);
             
             if($stmt->execute()){
-                $msg = "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
-                // Additional code if needed
+                header('Location: success.php?name='.urlencode($name).'&email='.urlencode($email).'&date='.urlencode($date).'&timeslot='.urlencode($timeslot).'&room='.urlencode($room).'&first_reader='.urlencode($first_reader).'&second_reader='.urlencode($second_reader).'&thesis='.urlencode($thesis));
+                exit;
             } else {
                 // Handle error in booking
                 $msg = "<div class='alert alert-danger'>Error in booking</div>";

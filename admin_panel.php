@@ -24,27 +24,27 @@ function fetchAllBookings($mysqli) {
     <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
     <style>
         #bookingsTable {
-            margin: 20px auto; /* Center table and add margin */
-            width: 95%; /* Adjust width */
+            margin: 30px auto;
+            width: 85%;
         }
         #bookingsTable table {
-            font-size: 0.8em; /* Make table text smaller */
-            border-collapse: collapse; /* Collapse borders */
+            font-size: 0.8em;
+            border-collapse: collapse;
         }
         #bookingsTable th, #bookingsTable td {
-            padding: 8px; /* Add padding */
-            border: 1px solid #ddd; /* Add border */
+            padding: 8px;
+            border: 1px solid #ddd;
         }
         #bookingsTable th {
-            background-color: #f2f2f2; /* Header background color */
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Admin Panel</a>
+        <div class="navbar-header" >
+            <img src="img/logo.png" alt="Logo" class="navbar-brand" href="#">
         </div>
         <ul class="nav navbar-nav">
           <li class="active"><a href="admin_panel.php">Home</a></li>
@@ -125,11 +125,10 @@ function fetchAllBookings($mysqli) {
                     break;
             }
         } else {
-            echo '<div id="bookingsTable" class="table-responsive">'; 
-
             echo "<h3>Welcome to the Admin Panel</h3>";
             
             $allBookings = fetchAllBookings($mysqli);
+            echo '<div id="bookingsTable" class="table-responsive">'; 
             echo '<table class="table table-bordered">';
             echo '<thead>';
             echo '<tr>';
@@ -161,10 +160,10 @@ function fetchAllBookings($mysqli) {
             }
             echo '</tbody>';
             echo '</table>';
+            echo '<button onclick="generatePDF()">Download PDF</button>';
             echo '</div>';
         }
         ?>
-        <button onclick="generatePDF()">Download PDF</button>
     </div>
     <script>
         function generatePDF() {
