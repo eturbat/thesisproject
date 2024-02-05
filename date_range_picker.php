@@ -28,17 +28,12 @@
             margin-bottom: 10px;
             width: 100%; /* Adjust the width of input fields */
         }
-        .submit-btn {
+        .btn {
             width: 100%; /* Button width to fit the form */
-            background-color: #007bff;
-            color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-        }
-        .submit-btn:hover {
-            background-color: #0056b3;
         }
         .date-inputs-row {
             display: flex;
@@ -88,7 +83,7 @@
                         <input type="text" id="to" name="end_date" class="form-control">
                     </div>
                 </div>
-                <input type="submit" value="Set Dates" class="submit-btn">
+                <input type="submit" value="Set Dates" class="btn btn-primary">
             </form>
         </div>
     </div>

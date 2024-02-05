@@ -1,18 +1,33 @@
 <?php
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
-function fetchAllBookings($mysqli) {
-    $query = "SELECT * FROM bookings";
-    $result = $mysqli->query($query);
+function fetchAllBookings($mysqli, $selectedProfessor = '') {
+    if (!empty($selectedProfessor) && $selectedProfessor != 'All') {
+        $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reader_one = ? OR reader_two = ?");
+        $stmt->bind_param('ss', $selectedProfessor, $selectedProfessor);
+    } else {
+        $stmt = $mysqli->prepare("SELECT * FROM bookings");
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $bookings = [];
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $bookings[] = $row;
-        }
+    while ($row = $result->fetch_assoc()) {
+        $bookings[] = $row;
     }
     return $bookings;
 }
+
+$professorsQuery = "SELECT DISTINCT reader_one FROM bookings UNION SELECT DISTINCT reader_two FROM bookings ORDER BY reader_one";
+$professorsResult = $mysqli->query($professorsQuery);
+
+$professors = [];
+while ($row = $professorsResult->fetch_assoc()) {
+    $professors[] = $row['reader_one'];
+}
+
+$selectedProfessor = isset($_GET['professor']) ? $_GET['professor'] : 'All';
+$bookings = fetchAllBookings($mysqli, $selectedProfessor);
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +39,7 @@ function fetchAllBookings($mysqli) {
     <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
     <style>
         #bookingsTable {
-            margin: 30px auto;
+            margin: 0px auto;
             width: 85%;
         }
         #bookingsTable table {
@@ -125,10 +140,23 @@ function fetchAllBookings($mysqli) {
                     break;
             }
         } else {
-            echo "<h3>Welcome to the Admin Panel</h3>";
-            
-            $allBookings = fetchAllBookings($mysqli);
             echo '<div id="bookingsTable" class="table-responsive">'; 
+            echo 
+            '<div class="control-row">
+            <form action="" method="get" class="form-inline" style="display: flex; align-items: center;">
+                <h4 style="margin-top: 20px; margin-bottom: 20px;">Computer Science Department Oral Defense Schedule for</h4>
+                <div class="form-group">
+                    <select name="professor" id="professor" class="form-control" onchange="this.form.submit()" style="margin-top: 20px; margin-bottom: 20px; margin-left: 10px;">
+                        <option value="All">All Professors</option>';     
+                        foreach ($professors as $professor) {
+                            $selected = ($selectedProfessor == $professor) ? ' selected' : '';
+                            echo "<option value=\"$professor\"$selected>$professor</option>";
+                        }
+                        echo '
+                        </select>
+                    </div>
+                </form>
+            </div>';            
             echo '<table class="table table-bordered">';
             echo '<thead>';
             echo '<tr>';
@@ -140,13 +168,13 @@ function fetchAllBookings($mysqli) {
             echo '<th>Room</th>';
             echo '<th>First Reader</th>';
             echo '<th>Second Reader</th>';
-            echo '<th>Thesis Topic</th>';
+            #echo '<th>Thesis Topic</th>';
 
             echo '</tr>';
             echo '</thead>';
             echo '<tbody>';
             
-            foreach ($allBookings as $booking) {
+            foreach ($bookings as $booking) {
                 echo '<tr>';
                 echo '<td>'.htmlspecialchars($booking['name']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['email']).'</td>';
@@ -155,13 +183,17 @@ function fetchAllBookings($mysqli) {
                 echo '<td>'.htmlspecialchars($booking['room']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['reader_one']).'</td>';
                 echo '<td>'.htmlspecialchars($booking['reader_two']).'</td>';
-                echo '<td>'.htmlspecialchars($booking['thesis']).'</td>';
+                #echo '<td>'.htmlspecialchars($booking['thesis']).'</td>';
                 echo '</tr>';
             }
             echo '</tbody>';
             echo '</table>';
-            echo '<button onclick="generatePDF()">Download PDF</button>';
             echo '</div>';
+            echo '
+            <div class="col-md-11 text-right" style="margin-left: 25px;">
+                <button onclick="generatePDF()" class="btn btn-primary">Download PDF</button>
+            </div>';
+
         }
         ?>
     </div>

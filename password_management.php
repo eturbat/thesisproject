@@ -69,19 +69,14 @@ while ($row = $fetchResult->fetch_assoc()) {
             position: relative;
             z-index: 2;
         }
-        .submit-btn {
+        .btn {
             display: block;
             width: 100%;
             margin: 10px auto;
-            background-color: #007bff;
-            color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-        }
-        .submit-btn:hover {
-            background-color: #0056b3;
         }
         .panel-form {
             padding: 10px;
@@ -111,7 +106,7 @@ while ($row = $fetchResult->fetch_assoc()) {
                             <input id="password-<?= $panel ?>" type="password" name="password" value="<?= htmlspecialchars($currentPasswords[$panel] ?? '') ?>" class="form-control" required>
                             <span toggle="#password-<?= $panel ?>" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                         </div>
-                        <button type="submit" class="submit-btn">Update</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                 </div>
                 <?php endforeach; ?>

@@ -10,7 +10,7 @@
         .logo {
             display: block;
             margin: auto;
-            width: 100px; /* Adjust based on your logo's size */
+            width: 100px;
             padding-top: 20px;
         }
         .access-pad {
@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="img/logo.png" alt="Logo" class="logo"> <!-- Update src with your logo path -->
+        <img src="img/logo.png" alt="Logo" class="logo">
         <h2>Welcome to the Oral Defense Scheduling System</h2>
         <p>This system allows students to schedule their oral defense sessions and professors to indicate their availability.</p>
         

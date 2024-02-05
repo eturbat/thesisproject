@@ -130,9 +130,9 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                                 $inputName = "availability[$formattedDate][$timeslot]";
                                 echo "<div class='checkbox timeslot'><label><input type='checkbox' name='$inputName'> <span class='timeslot-label'>$timeslot</span></label></div>";
                             }
-                            echo "</div>"; // Close date container
+                            echo "</div>";
                         }
-                        echo "</div>"; // Close week row
+                        echo "</div>";
                     }
                     ?>
                 </div>
