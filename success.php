@@ -61,7 +61,7 @@
 <div class="container">
     <div class="success-message">
         <img src="img/logo.png" alt="Logo" class="logo-img">
-        <h2>Booking Confirmed Successfully!</h2>
+        <h2><?php echo htmlspecialchars($_GET['name']); ?>, you all set!</h2>
         <p>Your oral defense has been scheduled.</p>
     </div>
     <hr class="divider">
