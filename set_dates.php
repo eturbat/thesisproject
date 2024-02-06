@@ -13,7 +13,7 @@ $end_date = $_POST['end_date'];
 // Validate dates (basic example, consider more robust validation)
 if (!$start_date || !$end_date || $start_date > $end_date) {
     // Handle invalid input
-    header('Location: admin_panel.html?status=invalid');
+    header('Location: admin_panel.php?status=invalid');
     exit;
 }
 
