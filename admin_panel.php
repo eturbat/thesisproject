@@ -110,9 +110,6 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
                 case 'password_management':
                     include('password_management.php');
                     break;
-                default:
-                    echo "<h3>Welcome to the Admin Panel</h3>";
-                    break;
             }
         } else {
             echo '<div id="bookingsTable" class="table-responsive">'; 
