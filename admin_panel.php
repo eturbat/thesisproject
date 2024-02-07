@@ -63,41 +63,16 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
         </div>
         <ul class="nav navbar-nav">
           <li class="active"><a href="admin_panel.php">Home</a></li>
-          <li><a href="admin_panel.php?page=date_range_picker">Date Range Picker</a></li>
-          <li><a href="admin_panel.php?page=room_availability">Room Availability</a></li>
-          <li><a href="admin_panel.php?page=add_professor">Add Professor</a></li>
-          <li><a href="admin_panel.php?page=password_management">Password Management</a></li>
+          <li><a href="admin_panel.php?page=set_dates">Manage Dates</a></li>
+          <li><a href="admin_panel.php?page=room_availability">Manage Rooms</a></li>
+          <li><a href="admin_panel.php?page=add_professor">Manage Professors</a></li>
+          <li><a href="admin_panel.php?page=password_management">Manage Passwords</a></li>
         </ul>
       </div>
     </nav>
 
     <div class="container">
         <?php
-        if (isset($_GET['status'])) {
-            $status = $_GET['status'];
-            $alertType = '';
-            $message = '';
-
-            switch ($status) {
-                case 'success':
-                    $alertType = 'alert-success';
-                    $message = 'Dates set successfully!';
-                    break;
-                case 'invalid':
-                    $alertType = 'alert-warning';
-                    $message = 'Invalid dates provided!';
-                    break;
-                case 'error':
-                    $alertType = 'alert-danger';
-                    $message = 'An error occurred while setting dates!';
-                    break;
-            }
-
-            if ($message !== '') {
-                echo "<div class='alert $alertType' role='alert'>$message</div>";
-            }
-        }
-        
         if (isset($_GET['roomStatus'])) {
             $roomStatus = $_GET['roomStatus'];
             $alertType = '';
@@ -123,8 +98,8 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
             switch ($page) {
-                case 'date_range_picker':
-                    include('date_range_picker.php');
+                case 'set_dates':
+                    include('set_dates.php');
                     break;
                 case 'room_availability':
                     include('room_availability.php');
