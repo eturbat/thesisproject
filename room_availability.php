@@ -152,6 +152,10 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
             display: inline-block;
             width: calc(100% - 45px); /* Adjust width to fit button */
         }
+        .delete-icon {
+            color: #d9534f; 
+            cursor: pointer;
+        }
         .delete-icon i.fa, .delete-icon i.fas {
             font-size: 1.5rem; 
             margin-left: auto; /* Aligns the icon to the right */
@@ -159,6 +163,10 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
         .list-group-item {
             display: flex;
             justify-content: space-between; /* Ensures space between room name and icon */
+        }
+        .divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
         }
     </style>
 </head>
@@ -173,7 +181,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                     </div>
                     <button type="submit" class="add-room-btn"><i class="fa fa-plus"></i></button>
                 </form>
-                <hr>
+                <hr class="divider">
                 <ul class="list-group">
                     <label>Current Rooms</label>
                     <?php foreach ($rooms as $room): ?>
@@ -200,8 +208,6 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
-                    <div class="availability-container">
                         <?php
                         $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
                         $weekDays = [];
@@ -228,7 +234,6 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                             echo "</div>";
                         }
                         ?>
-                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

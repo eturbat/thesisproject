@@ -70,14 +70,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Handle deletion of the date range
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
-    $deleteQuery = "DELETE FROM defense_schedule";
-    if ($mysqli->query($deleteQuery)) {
+    // Begin transaction to ensure data integrity
+    $mysqli->begin_transaction();
+    try {
+        // Delete all entries from the defense_schedule table
+        $deleteDefenseScheduleQuery = "DELETE FROM defense_schedule";
+        $mysqli->query($deleteDefenseScheduleQuery);
+
+        // Delete all entries from the bookings table
+        $deleteBookingsQuery = "DELETE FROM bookings";
+        $mysqli->query($deleteBookingsQuery);
+
+        // Commit the transaction if both deletions are successful
+        $mysqli->commit();
         header('Location: admin_panel.php?page=set_dates&status=date_deleted');
         exit;
-    } else {
-        header('Location: admin_panel.php?page=set_dates.php?status=date_error');
+    } catch (mysqli_sql_exception $exception) {
+        // Rollback the transaction in case of any error
+        $mysqli->rollback();
+        header('Location: admin_panel.php?page=set_dates&status=date_error');
         exit;
     }
 }
@@ -168,6 +180,11 @@ $mysqli->close();
         .delete-icon i.fa, .delete-icon i.fas {
             font-size: 2rem; 
         }
+        .divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+        }
+        
     </style>
 </head>
 <body>
@@ -199,7 +216,7 @@ $mysqli->close();
                 <i class="fa fa-trash-o" aria-hidden="true"></i>
             </a>
         </div>
-        <hr> <!-- Line to separate header from details -->
+        <hr class="divider">
         <div class="date-details">
             <span class="date-label">Start Date: </span><span class="date-text"><?= $currentDate['start_date']; ?></span>
         </div>
