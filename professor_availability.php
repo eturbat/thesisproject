@@ -237,6 +237,7 @@ foreach ($period as $date) {
             </div>
         </form>
     </div>
+</div>
 </body>
 </html>
 
