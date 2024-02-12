@@ -113,29 +113,84 @@ if(isset($_POST['submit'])){
 
 <!doctype html>
 <html lang="en">
-
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Book Available Slot</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            position: relative;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            width: 70%; 
+            max-width: auto; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .instruction-box {
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #fff5f5;
+        }
 
-    <title></title>
+        .room-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/main.css">
-  </head>
-  <body>
+        .room {
+            background-color: #fff;
+            text-align: center;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: calc(30% - 10px); 
+        }
+
+        .slot {
+            margin: 5px 0;
+        }
+
+        .btn-success, .btn-danger {
+            width: 100%;
+            margin-top: 5px;
+        }
+        .divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+        }
+
+    </style>
+</head>
+<body>
     <div class="container">
-            <h1 class="text-center">Please choose available slot on <?php echo date('m/d/Y', strtotime($date)); ?></h1><hr>
-            <div>
-                <?php echo isset($msg) ? $msg : ""; ?>
-            </div>
+    <a onclick="history.back()" class="btn btn-primary">Go Back</a>
+
+        <h3 class="text-center">Selected Date: <?php echo date('m/d/Y', strtotime($date)); ?></h3>
+        <hr>
+        <div class="instruction-box">
+            Please choose an available slot for the room you prefer. Ensure your selected time aligns with your availability and preparation.
+        </div>
+        <div class="room-container">
             <?php foreach ($roomsAvailability as $roomName => $timeslots): ?>
-            <div class="row">
-                <h3><?php echo htmlspecialchars($roomName); ?></h3>
-                <?php foreach ($timeslots as $ts): ?>
-                    <div class="col-md-3">
-                        <div class="form-group">
+                <div class="room">
+                    <h3><?php echo htmlspecialchars($roomName); ?></h3>
+                    <hr class="divider">
+                    <?php foreach ($timeslots as $ts): ?>
+                        <div class="slot">
                             <?php
                             if (in_array($ts, $bookings[$roomName] ?? [])) {
                                 echo "<button class='btn btn-danger disabled' disabled> $ts (Booked)</button>";
@@ -146,18 +201,18 @@ if(isset($_POST['submit'])){
                             }
                             ?>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
         </div>
+    </div>  
     <div class="modal" id="myModal">
         <div class="modal-dialog">
             <div class="modal-content">
 
       <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title"> Confirmation <span id="slot"></span>
+                    <h4 class="text-center"><strong>Confirmation</strong></h4>
                 </div>
 
       <!-- Modal body -->

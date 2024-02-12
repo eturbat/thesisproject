@@ -122,6 +122,10 @@ $mysqli->close();
             font-size: 1.5em;
             color: #333;
         }
+        .form-group {
+            margin-bottom: 0;
+            width: 45%; 
+        }
         .form-label {
             margin-right: 10px;
         }
@@ -140,10 +144,6 @@ $mysqli->close();
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .form-group {
-            margin-bottom: 0;
-            width: 45%; 
         }
         .entry-history-form {
             margin-top: 20px;

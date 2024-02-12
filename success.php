@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Success</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #f4f4f4;
             color: #333;
         }
@@ -62,7 +63,7 @@
     <div class="success-message">
         <img src="img/logo.png" alt="Logo" class="logo-img">
         <h2><?php echo htmlspecialchars($_GET['name']); ?>, you all set!</h2>
-        <p>Your oral defense has been scheduled.</p>
+        <p>Your oral defense has been scheduled. Best of luck on your upcoming defense!</p>
     </div>
     <hr class="divider">
     <div class="details">

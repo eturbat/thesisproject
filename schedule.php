@@ -68,9 +68,9 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $ye
     // }
     // $stmt->close();
 
-    echo "<pre>Availability Data: ";
-    print_r($availabilityData);
-    echo "</pre>";
+    // echo "<pre>Availability Data: ";
+    // print_r($availabilityData);
+    // echo "</pre>";
 
     return $availabilityData;
 }
@@ -92,9 +92,9 @@ function findOverlappingSlots($availabilityData, $first_reader, $second_reader) 
         }
     }
 
-    echo "<pre>Overlapping Slots: ";
-    print_r($overlappingSlots);
-    echo "</pre>";
+    // echo "<pre>Overlapping Slots: ";
+    // print_r($overlappingSlots);
+    // echo "</pre>";
 
     return $overlappingSlots;
 }
@@ -205,8 +205,7 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
     $dayOfWeek = $dateComponents['wday'];
     
     $calendar = "<table class='table table-bordered'>";
-    $calendar .= "<center><h1 class='heading'>Welcome to Oral Defense Scheduling Calendar</h1></center>";
-    $calendar .= "<center><h2>$monthName $year</h2></center>";
+    $calendar .= "<div class='month-year'><strong>Date: $monthName $year</strong></div>";
     $calendar .= "<tr>";
     
     foreach($daysOfWeek as $day) {
@@ -267,10 +266,10 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
                                     </a>
                                   <small><i>$availableSlotsCount slots left</i></small></td>";
                 } else {
-                    $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Not Available</button></td>";
+                    $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Unavailable</button></td>";
                 }
             } else {
-                $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Not Available</button>";
+                $calendar .= "<td class='$today'><h4>$currentDay</h4> <button class='btn btn-danger btn-xs'>Unavailable</button>";
             }
         }
         
@@ -296,49 +295,103 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
 
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <title>Oral Defense Calendar</title>
     <style>
-        @media only screen and (max-width: 760px),
-        (min-device-width: 802px) and (max-device-width: 1020px) {
-
+        body {
+            font-family: 'Inter', sans-serif;
         }
-
-        @media (min-width: 641px) {
-
-        }
-
-        .row{
+        .calendar-container {
+            position: relative;
             margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            width: 100%; 
+            max-width: auto; 
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .today{
-            background: yellow;
+        .calendar-heading {
+            text-align: center;
+            margin: 20px;
         }
-
-        .blocked {
-            background: #ccc;
+        .calendar-heading h1 {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
         }
-
-        .heading {
-            background: #F8C42C;
-            padding: 30px;
+        .month-year {
+            font-size: 15px;
+            color: #666;
+            text-align: right;
+            margin: 10px;
         }
-
+        .instruction-box {
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #fff5f5;
+        }
+        table {
+            width: 100%;
+            table-layout: fixed;
+        }
+        th, td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #bababa;
+        }
+        .today {
+            background-color: #ffffe0;
+        }
+        .blocked, .not-available {
+            background-color: #bababa;
+        }
+        .available-slot {
+            background-color: #dff0d8;
+        }
+        .btn-book {
+            margin-top: 5px;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+        .slots-left {
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <?php
-                    echo build_calendar($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $first_reader, $second_reader, $room);
-                ?>
+        <div class="calendar-container">
+        <a href="student_index.php" class="btn btn-primary">Go Back</a>
+            <div class="instruction-box">
+            Please review the calendar to select a date for your oral defense. 
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <?php
+                        echo build_calendar($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $first_reader, $second_reader, $room);
+                    ?>
+                </div>
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </body>
 </html>
