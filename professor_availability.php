@@ -135,6 +135,7 @@ foreach ($period as $date) {
         }
         h2 {
             text-align: center;
+            margin-bottom: 20px;
         }
         .form-footer {
             display: flex;
@@ -174,6 +175,13 @@ foreach ($period as $date) {
         top: 25px;
         left: 32px;
         }
+        .instruction-box {
+            border: 1px solid #f39c12;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #fff5f5;
+        }
 
         .checkmark.draw:after {
         content: '';
@@ -207,12 +215,24 @@ foreach ($period as $date) {
             opacity: 1;
         }
         }
+        .divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="availability-container">
-        <h2>Welcome to Professor Availability Poll</h2>
+        <h2>Professor Availability Poll</h2>
+            <div class="instruction-box">
+                <p><strong>Welcome to the Oral Defense Scheduling System!</strong> please mark your available slots below. 
+                Your availability information is important for generating a calendar that students can use to schedule their oral defense sessions. 
+                This process simplifies scheduling for oral defense coordinators, readers, and defenders, ensuring a smooth and efficient coordination of oral defenses. 
+                </p>
+                <p><strong>Please ensure that you accurately mark all times when you are available to participate in defenses. </strong></p>
+            </div>
+        <hr class="divider">
         <form action="professor_availability.php" method="post">
             <div class="form-group">
                 <select name="name" id="name" class="form-control">

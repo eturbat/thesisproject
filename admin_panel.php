@@ -44,6 +44,29 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
             background-color: #f4f4f4;
             color: #333;
         }
+        .navbar-nav {
+            display: flex;
+            justify-content: center; /* Center navbar items */
+            width: 100%;
+        }
+        .navbar-nav li {
+            margin: 0 10px; /* Equal margin on both sides */
+        }
+        .navbar-nav li a {
+            border-radius: 4px;
+        }
+        .navbar-nav .active a {
+            background-color: #5cb85c; /* Active item background color */
+            color: white !important;
+        }
+        /* Ensure the navbar doesn't collapse in mobile view */
+        @media (max-width: 767px) {
+            .navbar-nav {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
         #bookingsTable {
             margin: 0px auto;
             width: 80%;
@@ -64,15 +87,13 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
 <body>
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
-        <div class="navbar-header" >
-            <img src="img/logo.png" alt="Logo" class="navbar-brand" href="#">
-        </div>
         <ul class="nav navbar-nav">
-          <li class="active"><a href="admin_panel.php">Home</a></li>
-          <li><a href="admin_panel.php?page=set_dates">Manage Dates</a></li>
-          <li><a href="admin_panel.php?page=room_availability">Manage Rooms</a></li>
-          <li><a href="admin_panel.php?page=add_professor">Manage Professors</a></li>
-          <li><a href="admin_panel.php?page=password_management">Manage Passwords</a></li>
+        <img src="img/logo.png" alt="Logo" class="navbar-brand" href="https://wooster.edu/">
+          <li class="<?= !isset($_GET['page']) ? 'active' : '' ?>"><a href="admin_panel.php">Home</a></li>
+          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'set_dates') ? 'active' : '' ?>"><a href="admin_panel.php?page=set_dates">Manage Dates</a></li>
+          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'room_availability') ? 'active' : '' ?>"><a href="admin_panel.php?page=room_availability">Manage Rooms</a></li>
+          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'add_professor') ? 'active' : '' ?>"><a href="admin_panel.php?page=add_professor">Manage Professors</a></li>
+          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'password_management') ? 'active' : '' ?>"><a href="admin_panel.php?page=password_management">Manage Passwords</a></li>
         </ul>
       </div>
     </nav>
