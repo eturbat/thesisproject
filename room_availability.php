@@ -93,12 +93,17 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <title>Room Availability</title>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
         .form-container {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
         }
         .form-section {
             margin-top: 20px;
@@ -111,7 +116,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
             margin-right: 20px;
         }
         .availability-container {
-            margin-top: 20px;
+            margin-top: 10px;
             background-color: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
@@ -177,7 +182,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                 <form action="add_room.php" method="post" class="d-flex align-items-center" onsubmit="return validateForm();">
                     <div class="form-group add-room-input">
                         <label>Add Room</label>
-                        <input type="text" name="newRoomName" id="newRoomName" class="form-control" placeholder="ex. Taylor Hall 200" required>
+                        <input type="text" name="newRoomName" id="newRoomName" class="form-control" placeholder="e.g. Taylor Hall 200" required>
                     </div>
                     <button type="submit" class="add-room-btn"><i class="fa fa-plus"></i></button>
                 </form>

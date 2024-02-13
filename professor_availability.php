@@ -97,9 +97,15 @@ foreach ($period as $date) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>Professor Availability</title>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
         .availability-container {
             margin-top: 20px;
             background-color: #f8f9fa;
@@ -138,6 +144,7 @@ foreach ($period as $date) {
         .form-group {
             text-align: left; 
             margin-top: 30px;
+            width: 40%; 
         }
         .checkmark-circle {
         width: 80px;

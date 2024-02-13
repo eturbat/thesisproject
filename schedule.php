@@ -307,6 +307,8 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .calendar-container {
             position: relative;

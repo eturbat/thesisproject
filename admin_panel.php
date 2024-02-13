@@ -35,12 +35,18 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <title>Admin Panel</title>
     <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Admin Panel</title>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
         #bookingsTable {
             margin: 0px auto;
-            width: 85%;
+            width: 80%;
         }
         #bookingsTable table {
             font-size: 0.8em;
@@ -170,10 +176,15 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
         ?>
     </div>
     <script>
-        function generatePDF() {
-            const element = document.getElementById("bookingsTable");
-            html2pdf().from(element).save("bookings-list.pdf");
-        }
+    function generatePDF() {
+        const element = document.getElementById("bookingsTable");
+        html2pdf().from(element).set({
+            margin: 0,
+            filename: 'bookings-list.pdf',
+            html2canvas: { scale: 15 },
+            jsPDF: { orientation: 'landscape', unit: 'in', format: 'letter', compressPDF: true }
+        }).save();
+    }
     </script>
 </body>
 </html>

@@ -77,12 +77,17 @@ $professors = fetchAllProfessors($mysqli);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <title>Manage Professor</title>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
         .form-container {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
         }
         .form-section {
             margin-top: 20px;
@@ -135,7 +140,7 @@ $professors = fetchAllProfessors($mysqli);
                 <form action="add_professor.php" method="post" class="d-flex align-items-center" onsubmit="return validateForm();">
                     <div class="form-group add-professor-input">
                     <label for="newProfessorName">Add Professor</label>
-                    <input type="text" name="newProfessorName" id="newProfessorName" class="form-control" placeholder="ex. Dr. Sofia Visa" required>
+                    <input type="text" name="newProfessorName" id="newProfessorName" class="form-control" placeholder="e.g. Dr. Sofia Visa" required>
                 </div>
                 <button type="submit" class="add-professor-btn"><i class="fa fa-plus"></i></button>
             </form>

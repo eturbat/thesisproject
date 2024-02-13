@@ -30,6 +30,8 @@ while ($row = $result->fetch_assoc()) {
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .instruction-box {
             border: 1px solid #f39c12;
@@ -44,7 +46,7 @@ while ($row = $result->fetch_assoc()) {
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            width: 40%; /* Adjusted width */
+            width: 30%; 
             max-width: 600px; 
             margin-left: auto;
             margin-right: auto;

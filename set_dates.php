@@ -104,8 +104,15 @@ $mysqli->close();
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
         .date-picker-form {
             margin-top: 20px;
             background-color: #f8f9fa;
@@ -197,11 +204,11 @@ $mysqli->close();
             <form action="set_dates.php" method="post">
                 <div class="date-inputs-row">
                     <div class="form-group">
-                        <label for="from" class="form-label">Defense start date:</label>
+                        <label for="from" class="form-label">Start date</label>
                         <input type="text" id="from" name="start_date" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="to" class="form-label">Defense end date:</label>
+                        <label for="to" class="form-label">End date</label>
                         <input type="text" id="to" name="end_date" class="form-control">
                     </div>
                 </div>

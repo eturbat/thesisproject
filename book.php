@@ -123,6 +123,8 @@ if(isset($_POST['submit'])){
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .container {
             position: relative;
@@ -131,7 +133,7 @@ if(isset($_POST['submit'])){
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            width: 70%; 
+            width: 60%; 
             max-width: auto; 
             margin-left: auto;
             margin-right: auto;
