@@ -74,15 +74,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     // Begin transaction to ensure data integrity
     $mysqli->begin_transaction();
     try {
-        // Delete all entries from the defense_schedule table
-        $deleteDefenseScheduleQuery = "DELETE FROM defense_schedule";
-        $mysqli->query($deleteDefenseScheduleQuery);
+        $tables = ['defense_schedule', 'bookings', 'available_rooms', 'professors', 'professor_list', 'rooms'];
+        foreach ($tables as $table) {
+            $query = "DELETE FROM $table";
+            $mysqli->query($query);
+        }
 
-        // Delete all entries from the bookings table
-        $deleteBookingsQuery = "DELETE FROM bookings";
-        $mysqli->query($deleteBookingsQuery);
-
-        // Commit the transaction if both deletions are successful
+        // Commit the transaction if all deletions are successful
         $mysqli->commit();
         header('Location: admin_panel.php?page=set_dates&status=date_deleted');
         exit;

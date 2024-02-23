@@ -26,9 +26,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert availability data
     $errorOccurred = false;
     foreach ($availability as $date => $timeslots) {
+        // Convert the date back to Y-m-d format
+        $dateObj = DateTime::createFromFormat("D, d F", $date);
+        $formattedDate = $dateObj->format("Y-m-d");
+
         foreach ($timeslots as $timeslot => $value) {
             $stmt = $mysqli->prepare("INSERT INTO rooms (name, date, timeslot) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $roomName, $date, $timeslot);
+            $stmt->bind_param("sss", $roomName, $formattedDate, $timeslot);
             if (!$stmt->execute()) {
                 $errorOccurred = true;
                 break;

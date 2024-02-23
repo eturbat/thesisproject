@@ -84,7 +84,7 @@ if ($roomResult) {
     }
 }
 
-$timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
+$timeslots = ["08:00-08:50", "09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
 ?>
 
 <!DOCTYPE html>
@@ -227,7 +227,7 @@ $timeslots = ["09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00
                         foreach ($weekDays as $weekNumber => $days) {
                             echo "<div class='week-row'>";
                             foreach ($days as $date) {
-                                $formattedDate = $date->format("Y-m-d");
+                                $formattedDate = $date->format("D, d F");
                                 echo "<div class='date-container'>";
                                 echo "<strong>$formattedDate</strong>";
                                 foreach ($timeslots as $timeslot) {

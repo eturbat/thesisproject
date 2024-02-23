@@ -248,10 +248,14 @@ foreach ($period as $date) {
             foreach ($weekDays as $weekNumber => $days) {
                 echo "<div class='week-row'>";
                 foreach ($days as $date) {
+                    
+                    $dateObj = new DateTime($date);
+                    $displayDate = $dateObj->format("D, d F"); // Format the date
+            
                     echo "<div class='date-container'>";
-                    echo "<strong>$date</strong>";
+                    echo "<strong>$displayDate</strong>";
                     foreach ($uniqueTimeslots[$date] as $timeslot) {
-                        $inputName = "availability[$date][$timeslot]";
+                        $inputName = "availability[$date][$timeslot]"; // Keep the submission format as Y-m-d
                         echo "<div class='checkbox timeslot'><label><input type='checkbox' name='$inputName'> <span class='timeslot-label'>$timeslot</span></label></div>";
                     }
                     echo "</div>";
