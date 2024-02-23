@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 23, 2024 at 01:16 AM
+-- Generation Time: Feb 23, 2024 at 03:07 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.4.29
 
@@ -58,13 +58,6 @@ CREATE TABLE `bookings` (
   `thesis` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`name`, `email`, `date`, `timeslot`, `room`, `reader_one`, `reader_two`, `thesis`) VALUES
-('test', 'enkhturbat6@gmail.com', '2024-04-02', '13:00-13:50', 'Taylor Hall 200', 'Dr. Montelione', 'Dr. Heather', 'Example thesis topic');
-
 -- --------------------------------------------------------
 
 --
@@ -92,16 +85,17 @@ INSERT INTO `defense_schedule` (`id`, `start_date`, `end_date`) VALUES
 
 CREATE TABLE `panel_passwords` (
   `panel` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `panel_passwords`
 --
 
-INSERT INTO `panel_passwords` (`panel`, `password`) VALUES
-('professor', '123'),
-('student', '12345');
+INSERT INTO `panel_passwords` (`panel`, `password`, `last_updated`) VALUES
+('professor', '12', '2024-02-23 02:04:12'),
+('student', '1234', '2024-02-23 02:03:56');
 
 -- --------------------------------------------------------
 
@@ -698,7 +692,7 @@ ALTER TABLE `defense_schedule`
 -- AUTO_INCREMENT for table `professors`
 --
 ALTER TABLE `professors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=342;
 
 --
 -- AUTO_INCREMENT for table `professor_list`
