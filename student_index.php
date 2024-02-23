@@ -9,6 +9,9 @@ if (!isset($_SESSION['student_logged_in'])) {
 
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+require_once 'student_sessionValidator.php';
+validateSession($mysqli);
+
 // Fetch professors for dropdowns
 $professors = [];
 $result = $mysqli->query("SELECT DISTINCT name FROM professors");

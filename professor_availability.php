@@ -8,6 +8,9 @@ if (!isset($_SESSION['professor_logged_in'])) {
 
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+require_once "professor_sessionValidator.php";
+validateSession($mysqli);
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];

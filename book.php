@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 if(isset($_GET['availableSlots'])) {
     $availableSlots = explode(',', $_GET['availableSlots']);
@@ -10,6 +11,9 @@ if(isset($_GET['availableSlots'])) {
 }
 
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
+
+require_once 'student_sessionValidator.php';
+validateSession($mysqli);
 
 $thesis = isset($_GET['thesis']) ? $_GET['thesis'] : '';
 $name = isset($_GET['name']) ? $_GET['name'] : '';

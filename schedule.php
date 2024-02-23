@@ -1,11 +1,14 @@
 <?php
-
+session_start();
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
 // Check for database connection error
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
+
+require_once 'student_sessionValidator.php';
+validateSession($mysqli);
 
 // Fetch the date range from the database
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";

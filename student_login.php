@@ -16,9 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Direct comparison instead of using password_verify()
     if ($row && $password === $row['password']) {
         $_SESSION['student_logged_in'] = true;
+        // Fetch and store the last updated timestamp
+        $stmt = $mysqli->prepare("SELECT last_updated FROM panel_passwords WHERE panel = 'student'");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $_SESSION['password_last_updated'] = $row['last_updated'];
+        }
         header('Location: student_index.php');
         exit;
-    } else {
+    }
+    else {
         $error = 'Incorrect password.';
     }
 }
