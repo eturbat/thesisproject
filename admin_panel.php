@@ -89,11 +89,27 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
       <div class="container-fluid">
         <ul class="nav navbar-nav">
         <img src="img/logo.png" alt="Logo" class="navbar-brand" href="https://wooster.edu/">
-          <li class="<?= !isset($_GET['page']) ? 'active' : '' ?>"><a href="admin_panel.php">Home</a></li>
-          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'set_dates') ? 'active' : '' ?>"><a href="admin_panel.php?page=set_dates">Manage Dates</a></li>
-          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'room_availability') ? 'active' : '' ?>"><a href="admin_panel.php?page=room_availability">Manage Rooms</a></li>
-          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'add_professor') ? 'active' : '' ?>"><a href="admin_panel.php?page=add_professor">Manage Professors</a></li>
-          <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'password_management') ? 'active' : '' ?>"><a href="admin_panel.php?page=password_management">Manage Passwords</a></li>
+       
+        <li class="<?= !isset($_GET['page']) ? 'active' : '' ?>">
+            <a href="admin_panel.php">Home</a>
+        </li>
+        
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'set_dates') ? 'active' : '' ?>">
+            <a href="admin_panel.php?page=set_dates">Manage Dates</a>
+        </li>
+
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'room_availability') ? 'active' : '' ?>">
+            <a href="admin_panel.php?page=room_availability">Manage Rooms</a>
+        </li>
+
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'add_professor') ? 'active' : '' ?>">
+            <a href="admin_panel.php?page=add_professor">Manage Professors</a>
+        </li>
+
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'password_management') ? 'active' : '' ?>">
+            <a href="admin_panel.php?page=password_management">Manage Passwords</a>
+        </li>
+        
         </ul>
       </div>
     </nav>
