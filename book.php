@@ -199,9 +199,9 @@ if(isset($_POST['submit'])){
                         <div class="slot">
                             <?php
                             if (in_array($ts, $bookings[$roomName] ?? [])) {
-                                echo "<button class='btn btn-danger disabled' disabled> $ts (Booked)</button>";
+                                echo "<button class='btn btn-danger disabled' disabled> $ts (Unavailable)</button>";
                             } elseif (in_array($ts, $professorBookedSlots)) {
-                                echo "<button class='btn btn-danger disabled' disabled> $ts (Reader(s) unavailable)</button>";
+                                echo "<button class='btn btn-danger disabled' disabled> $ts (Unavailable)</button>";
                             } else {
                                 echo "<button class='btn btn-success book' data-timeslot='$ts' data-room='".htmlspecialchars($roomName)."'> $ts (Available)</button>";
                             }
