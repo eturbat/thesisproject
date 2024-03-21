@@ -315,7 +315,7 @@ INSERT INTO `professor_list` (`id`, `name`) VALUES
 --
 -- Table structure for table `rooms`
 --
-
+ 
 CREATE TABLE `rooms` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
