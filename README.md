@@ -111,5 +111,3 @@ Once students have completed the form, the system directs them to a personalized
 After selecting a date, students are presented with available times and locations for their defense. Choosing a slot opens a confirmation modal, offering a final review before booking. A confirmation page then summarizes the scheduled defense details and displays them to the student.
 <img width="1680" alt="bookingpage" src="https://github.com/eturbat/wooral/assets/61502798/1a2b9587-2a51-4cef-aeb9-76ad6ec4ceb6">
 <img width="1680" alt="confirmation" src="https://github.com/eturbat/wooral/assets/61502798/75215292-5684-4e51-be40-3e966451fa42">
-<img width="1680" alt="confirmation" src="https://github.com/eturbat/wooral/assets/61502798/fe219403-74c6-44cb-bb4e-2cfb1821e021">
-
