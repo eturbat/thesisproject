@@ -60,6 +60,7 @@ Once the admin visits the `https://localhost/wooral/admin_panel.php` URL, they a
 <img width="1680" alt="managedate" src="https://github.com/eturbat/wooral/assets/61502798/5c04005b-352d-4f34-af50-2e3ebdd18f2d">
 
 
+
 🔵 Adding defense rooms (Manage Rooms) 🔵
 
 Once date range for defense has been set, admin should go to the next step: `Manage Rooms` feature. On the left, easily add new rooms by entering a name and clicking the plus icon. Right beside, set the specific availability for each room using a detailed weekly calendar view.
@@ -80,6 +81,7 @@ After all the necessary data has been entered from the admin end, the system is 
 
 ### Professors Panel
 <hr>
+
 🔵 Professor availability form 🔵
 
 Once professors visits the `https://localhost/wooral/` URL, they are taken to the landing page of WoOral app. Upon clicking the "Professor Panel" button, professors are directed to a authentication page. After authentication (password matches with admin's), professors can specify their availability through a "Professor Availability Form" by choosing their name from dropdown menu.
