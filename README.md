@@ -81,11 +81,14 @@ After all the necessary data has been entered from the admin end, the system is 
 ### Professors Panel
 <hr>
 
+
 🔵 Professor availability form 🔵
 
 Once professors visits the `https://localhost/wooral/` URL, they are taken to the landing page of WoOral app. Upon clicking the "Professor Panel" button, professors are directed to a authentication page. After authentication (password matches with admin's), professors can specify their availability through a "Professor Availability Form" by choosing their name from dropdown menu.
 <img width="1680" alt="index" src="https://github.com/eturbat/wooral/assets/61502798/57c1f655-59fb-4439-a1ef-9d9452f2bcbc">
 <img width="1680" alt="proflogin" src="https://github.com/eturbat/wooral/assets/61502798/c88a95cf-2029-4ae2-9355-068fec7f1974">
+<img width="1680" alt="profform" src="https://github.com/eturbat/wooral/assets/61502798/6d580c22-b57b-4cdf-899b-a0bbe865b7a8">
+
 
 
 ### Students Panel
@@ -94,7 +97,7 @@ Once professors visits the `https://localhost/wooral/` URL, they are taken to th
 🔵 Student information form 🔵
 
 Using the same authentication mechanism as the professors', students access the 'Students Panel' to begin the process. They start by completing the 'Student Information Form'. Dropdown menus for selecting readers are populated exclusively with professors who have already submitted their availability data. 
-<img width="1680" alt="profform" src="https://github.com/eturbat/wooral/assets/61502798/6d580c22-b57b-4cdf-899b-a0bbe865b7a8">
+<img width="1680" alt="studform" src="https://github.com/eturbat/wooral/assets/61502798/fd9e8d80-3f0c-42f1-985e-4df0270b411e">
 
 
 🔵 Personalized scheduling calendar 🔵
