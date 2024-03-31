@@ -51,6 +51,7 @@ Follow these steps to get your development environment running:
 
 ### Admin Panel
 <hr>
+
 🔵 Setting up the date range (Manage Dates) 🔵
 
 Once the admin visits the `https://localhost/wooral/admin_panel.php` URL, they are taken to their respective panel. Here, admins start by defining the timeframe for oral defenses through the `Manage Date` feature. Use the datepicker to pick a start and end date for the defense period. Once dates are set, confirm by clicking the "Set Dates" button, and view the selected range displayed under "Current Defense Date Range" for verification.
@@ -63,6 +64,7 @@ Once the admin visits the `https://localhost/wooral/admin_panel.php` URL, they a
 
 Once date range for defense has been set, admin should go to the next step: `Manage Rooms` feature. On the left, easily add new rooms by entering a name and clicking the plus icon. Right beside, set the specific availability for each room using a detailed weekly calendar view.
 <img width="1680" alt="addroom" src="https://github.com/eturbat/wooral/assets/61502798/fc1e4d1e-e6d8-4e88-b612-30d932cc0902">
+
 
 🔵 Adding professors (Manage Professors) 🔵 
 
@@ -84,17 +86,21 @@ Once professors visits the `https://localhost/wooral/` URL, they are taken to th
 <img width="1680" alt="index" src="https://github.com/eturbat/wooral/assets/61502798/57c1f655-59fb-4439-a1ef-9d9452f2bcbc">
 <img width="1680" alt="proflogin" src="https://github.com/eturbat/wooral/assets/61502798/c88a95cf-2029-4ae2-9355-068fec7f1974">
 
+
 ### Students Panel
 <hr>
+
 🔵 Student information form 🔵
 
 Using the same authentication mechanism as the professors', students access the 'Students Panel' to begin the process. They start by completing the 'Student Information Form'. Dropdown menus for selecting readers are populated exclusively with professors who have already submitted their availability data. 
 <img width="1680" alt="profform" src="https://github.com/eturbat/wooral/assets/61502798/6d580c22-b57b-4cdf-899b-a0bbe865b7a8">
 
+
 🔵 Personalized scheduling calendar 🔵
 
 Once students have completed the form, the system directs them to a personalized calendar that displays available defense dates. These dates are derived from the intersection of the selected professors' availabilities.
 <img width="1680" alt="calendar" src="https://github.com/eturbat/wooral/assets/61502798/ec7fbaf7-5e18-4efc-8909-4f05b58b7004">
+
 
 🔵 Booking and confirmation 🔵
 
