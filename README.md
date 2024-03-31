@@ -67,7 +67,7 @@ After all the necessary data has been entered from the admin end, the system is 
 Once professors visits the `https://localhost/wooral/` URL, they are taken to the landing page of WoOral app. Upon clicking the "Professor Panel" button, professors are directed to a authentication page. After authentication (password matches with admin's), professors can specify their availability through a "Professor Availability Form" by choosing their name from dropdown menu.
 
 
-### Students Panel
+### Students Panel 
 #### Student information form
 Using the same authentication mechanism as the professors', students access the 'Students Panel' to begin the process. They start by completing the 'Student Information Form'. Dropdown menus for selecting readers are populated exclusively with professors who have already submitted their availability data. 
 
