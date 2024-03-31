@@ -60,7 +60,6 @@ Once the admin visits the `https://localhost/wooral/admin_panel.php` URL, they a
 <img width="1680" alt="managedate" src="https://github.com/eturbat/wooral/assets/61502798/5c04005b-352d-4f34-af50-2e3ebdd18f2d">
 
 
-
 🔵 Adding defense rooms (Manage Rooms) 🔵
 
 Once date range for defense has been set, admin should go to the next step: `Manage Rooms` feature. On the left, easily add new rooms by entering a name and clicking the plus icon. Right beside, set the specific availability for each room using a detailed weekly calendar view.
