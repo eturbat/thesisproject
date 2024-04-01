@@ -1,16 +1,18 @@
 <?php
+// session to manage user sessions throughout the app
 session_start();
+//db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
-// Check for database connection error
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
+// includes and calls a function from an external script (student_sessionValidator.php) to validate the user's session 
 require_once 'student_sessionValidator.php';
 validateSession($mysqli);
 
-// Fetch the date range from the database
+// Fetch the date range from db
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
 $result = $mysqli->query($query);
 
@@ -19,12 +21,12 @@ if ($result && $result->num_rows > 0) {
     $start_date = new DateTime($row['start_date']);
     $end_date = new DateTime($row['end_date']);
 } else {
-    // Handle case where no dates are set
+    // handle case where no dates are set
     echo "No defense schedule dates are set.";
     exit;
 }
 
-// Convert the start and end dates to month and year for the calendar
+// convert the start and end dates to month and year for the calendar
 $month = $start_date->format('m');
 $year = $start_date->format('Y');
 
@@ -32,12 +34,13 @@ $year = $start_date->format('Y');
 //     echo "<div class='alert alert-success'>Oral defense time successfully booked!</div>";
 // }
 
+// to fetch availability data for the given professors and month/year
 function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $year) {
     $availabilityData = [
         'professors' => []
     ];
 
-    // Fetch availability for first reader
+    // fetch availability for first reader
     $stmt = $mysqli->prepare("SELECT date, timeslot FROM professors WHERE name=? AND MONTH(date)=? AND YEAR(date)=?");
     $stmt->bind_param("sii", $first_reader, $month, $year);
     if ($stmt->execute()) {
@@ -48,7 +51,7 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $ye
     }
     $stmt->close();
 
-    // Fetch availability for second reader
+    // fetch availability for second reader
 
     $stmt = $mysqli->prepare("SELECT date, timeslot FROM professors WHERE name=? AND MONTH(date)=? AND YEAR(date)=?");
     $stmt->bind_param("sii", $second_reader, $month, $year);
@@ -60,7 +63,7 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $ye
     }
     $stmt->close();
 
-    // // Fetch availability for room
+    // // fetch availability for room
     // $stmt = $mysqli->prepare("SELECT date, timeslot FROM rooms WHERE name=? AND MONTH(date)=? AND YEAR(date)=?");
     // $stmt->bind_param("sii", $room, $month, $year);
     // if ($stmt->execute()) {
@@ -78,7 +81,7 @@ function getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $ye
     return $availabilityData;
 }
 
-
+// to find overlapping slots between two selected professors' availabilities
 function findOverlappingSlots($availabilityData, $first_reader, $second_reader) {
     $overlappingSlots = [];
 
@@ -108,7 +111,7 @@ $room = isset($_GET['room']) ? $_GET['room'] : '';
 
 
 // function checkSlots($mysqli, $date, $first_reader, $second_reader) {
-//     // Fetch all slots where either professor is booked
+//     // fetch all slots where either professor is booked
 //     $professorBookedQuery = "SELECT timeslot FROM bookings WHERE date=? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
 //     $stmt = $mysqli->prepare($professorBookedQuery);
 //     $stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
@@ -121,7 +124,7 @@ $room = isset($_GET['room']) ? $_GET['room'] : '';
 //     }
 //     $stmt->close();
 
-//     // Assuming getAvailabilityData() fetches all available slots for both professors
+//     // assuming getAvailabilityData() fetches all available slots for both professors
 //     $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, date('m', strtotime($date)), date('Y', strtotime($date)));
 //     $overlappingSlots = findOverlappingSlots($availabilityData, $first_reader, $second_reader);
 
@@ -131,11 +134,12 @@ $room = isset($_GET['room']) ? $_GET['room'] : '';
 //         return count($availableSlots);
 //     }
 
-//     return 0; // Return 0 if no overlapping slots or all slots are booked
+//     return 0; // return 0 if no overlapping slots or all slots are booked
 // }
 
+// to calculate available slots excluding times where professors or rooms are already booked
 function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
-    // Fetch intersected availability for selected professors
+    // This fetches intersected availability and calculates the count of available slots
     $intersectedAvailabilityQuery = "SELECT r.name, r.timeslot FROM rooms r
                                      JOIN professors p1 ON r.date = p1.date AND r.timeslot = p1.timeslot AND p1.name = ?
                                      JOIN professors p2 ON r.date = p2.date AND r.timeslot = p2.timeslot AND p2.name = ?
@@ -151,7 +155,7 @@ function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
     }
     $stmt->close();
 
-    // Fetch bookings for the selected date to identify booked slots
+    // fetch bookings for the selected date to identify booked slots
     $bookingsQuery = "SELECT room, timeslot FROM bookings WHERE date = ?";
     $stmt = $mysqli->prepare($bookingsQuery);
     $stmt->bind_param('s', $date);
@@ -164,7 +168,7 @@ function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
     }
     $stmt->close();
 
-    // Fetch all bookings for the selected date to identify slots where selected professors are unavailable
+    // fetch all bookings for the selected date to identify slots where selected professors are unavailable
     $professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
     $stmt = $mysqli->prepare($professorBookingsQuery);
     $stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
@@ -177,7 +181,7 @@ function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
     }
     $stmt->close();
 
-    // Calculate available slots excluding slots where selected professors are unavailable
+    // calculate available slots excluding slots where selected professors are unavailable
     $totalAvailableSlots = 0;
     foreach ($roomsAvailability as $roomName => $timeslots) {
         foreach ($timeslots as $timeslot) {
@@ -190,6 +194,7 @@ function getAvailableSlotsCount($mysqli, $date, $first_reader, $second_reader) {
     return $totalAvailableSlots;
 }
 
+// this function is to build and return the html for the calendar based on availability and bookings (rendering personalized scheduling calendar)
 function build_calendar($start_date, $end_date, $first_reader, $second_reader, $room) {
     $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
     $daysOfWeek = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
@@ -224,7 +229,7 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
     }
     
     $currentDay = 1;
-    // Fetch and process availability data
+    // processing availability data
     $availabilityData = getAvailabilityData($mysqli, $first_reader, $second_reader, $month, $year);
     $overlappingSlots = findOverlappingSlots($availabilityData, $first_reader, $second_reader);
 
@@ -262,6 +267,7 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
                 $name = isset($_GET['name']) ? $_GET['name'] : '';
                 $email = isset($_GET['email']) ? $_GET['email'] : '';
 
+                // logic to mark available and unavailable days
                 if ($availableSlotsCount > 0) {
                     $calendar .= "<td class='$today'><h4>$currentDay</h4> 
                                     <a href='book.php?date=".$date."&first_reader=".$first_reader."&second_reader=".$second_reader."&thesis=".$thesis."&name=".$name."&email=".$email."' class='btn btn-success btn-xs'>
@@ -390,6 +396,7 @@ function build_calendar($start_date, $end_date, $first_reader, $second_reader, $
             <div class="row">
                 <div class="col-md-12">
                     <?php
+                    // calling build_calendar function and it rendering the personalized calendar
                         echo build_calendar($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $first_reader, $second_reader, $room);
                     ?>
                 </div>

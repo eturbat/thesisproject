@@ -1,22 +1,26 @@
 <?php
+// session to manage user sessions throughout the app
 session_start();
 
+// redirect to login page if the professor is not logged in
 if (!isset($_SESSION['professor_logged_in'])) {
     header('Location: professor_login.php');
     exit;
 }
 
+// db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+// includes and calls a function from an external script (professor_sessionValidator.php) to validate the user's session 
 require_once "professor_sessionValidator.php";
 validateSession($mysqli);
 
-// Handle form submission
+// Handle form submission for setting availability
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
     $availability = $_POST["availability"] ?? [];
 
-    // Prepare the SQL statement outside of the loop
+    // sql for inserting availability data
     $stmt = $mysqli->prepare("INSERT INTO professors (name, date, timeslot) VALUES (?, ?, ?)");
 
     foreach ($availability as $date => $timeslots) {
@@ -31,25 +35,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt->close();
 
+    // redirect to a success page after handling the submission
     header('Location: professor_availability_success.php');
     exit;
 }
 
-// Fetch the defense schedule dates
+// fetch the oral defense timeframe from the database to build prof availability form
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
 $result = $mysqli->query($query);
 
+// check if there are any retrieved dates and set them for use
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $start_date = new DateTime($row['start_date']);
     $end_date = new DateTime($row['end_date']);
-    $end_date->modify('+1 day');
+    $end_date->modify('+1 day'); // to include the end date in the range (because it excludes last day)
 } else {
+    // exit if no defense schedule dates are set
     echo "No defense schedule dates are set.";
     exit;
 }
 
-// Fetch professors
+// fetch list of professors
 $profQuery = "SELECT * FROM professor_list";
 $profResult = $mysqli->query($profQuery);
 
@@ -60,7 +67,7 @@ if ($profResult) {
     }
 }
 
-// Fetch unique available timeslots across all rooms within the defense schedule dates
+// fetch unique available timeslots across all rooms within the defense schedule dates
 $uniqueTimeslotsQuery = "SELECT DISTINCT date, timeslot FROM rooms WHERE date BETWEEN ? AND ?";
 $uniqueTimeslotsStmt = $mysqli->prepare($uniqueTimeslotsQuery);
 $startDateStr = $start_date->format('Y-m-d');
@@ -71,24 +78,24 @@ $uniqueTimeslotsResult = $uniqueTimeslotsStmt->get_result();
 
 $uniqueTimeslots = [];
 while ($row = $uniqueTimeslotsResult->fetch_assoc()) {
-    $uniqueTimeslots[$row['date']][] = $row['timeslot'];
+    $uniqueTimeslots[$row['date']][] = $row['timeslot']; // organize timeslots by date
 }
 $uniqueTimeslotsStmt->close();
 
-// Sort timeslots for each date
+// sort the timeslots for each date for better slot readability
 foreach ($uniqueTimeslots as &$timeslots) {
     usort($timeslots, function($a, $b) {
         return strtotime(explode('-', $a)[0]) - strtotime(explode('-', $b)[0]);
     });
 }
-unset($timeslots); // Break the reference with the last element
+unset($timeslots); // break the reference with the last element
 
-// Group dates by weeks
+// organize dates into weeks, excluding weekends
 $period = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
 $weekDays = [];
 foreach ($period as $date) {
-    if ($date->format('N') < 6) { // Exclude weekends
-        $weekDays[$date->format("W")][] = $date->format("Y-m-d");
+    if ($date->format('N') < 6) { // check if the day is a weekday
+        $weekDays[$date->format("W")][] = $date->format("Y-m-d"); // grouping by week
     }
 }
 
@@ -253,7 +260,7 @@ foreach ($period as $date) {
                 foreach ($days as $date) {
                     
                     $dateObj = new DateTime($date);
-                    $displayDate = $dateObj->format("D, d F"); // Format the date
+                    $displayDate = $dateObj->format("D, d F"); // formatting the date to show as: ex. Wed, 03 April
             
                     echo "<div class='date-container'>";
                     echo "<strong>$displayDate</strong>";

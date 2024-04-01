@@ -1,5 +1,6 @@
 <?php
 
+// check for a status in the url and display an appropriate message
 if (isset($_GET['status'])) {
     if ($_GET['status'] == 'roomadded') {
         echo "<p class='alert alert-success'>New room added successfully!</p>";
@@ -10,12 +11,14 @@ if (isset($_GET['status'])) {
     }
 }
 
+// db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+// check if a delete operation was requested
 if (isset($_GET['delete'])) {
-    $roomId = $_GET['delete'];
+    $roomId = $_GET['delete']; // get the room id to delete
 
-    // First, fetch the room name to delete associated timeslots
+    // fetch the room name for the given id
     $roomNameQuery = "SELECT room_name FROM available_rooms WHERE room_id = ?";
     $stmt = $mysqli->prepare($roomNameQuery);
     $stmt->bind_param("i", $roomId);
@@ -28,62 +31,64 @@ if (isset($_GET['delete'])) {
         $mysqli->begin_transaction();
 
         try {
-            // Delete room availability timeslots
+            // delete room availability timeslots associated with the room name
             $deleteTimeslotsQuery = "DELETE FROM rooms WHERE name = ?";
             $stmtTimeslots = $mysqli->prepare($deleteTimeslotsQuery);
             $stmtTimeslots->bind_param("s", $roomName);
             $stmtTimeslots->execute();
             $stmtTimeslots->close();
 
-            // Delete the room
+            // delete the room entry from available_rooms table
             $deleteRoomQuery = "DELETE FROM available_rooms WHERE room_id = ?";
             $stmtRoom = $mysqli->prepare($deleteRoomQuery);
             $stmtRoom->bind_param("i", $roomId);
             $stmtRoom->execute();
             $stmtRoom->close();
-
-            // Commit transaction
             $mysqli->commit();
 
-            // Redirect back to room_availability.php with success message
+            // redirecting back to room_availability.php with success message
             header('Location: admin_panel.php?page=room_availability&status=roomdeleted');
             exit;
         } catch (mysqli_sql_exception $exception) {
             $mysqli->rollback();
-            // Redirect back with an error message
+            // error message
             header('Location: admin_panel.php?page=room_availability&status=room_error');
             exit;
         }
     } else {
-        // Redirect back with an error message if room not found
+        // redirect back with an error message if room not found
         header('Location: admin_panel.php?page=room_availability&status=room_error');
         exit;
     }
 }
 
+// fetch the latest defense schedule dates
 $query = "SELECT start_date, end_date FROM defense_schedule ORDER BY id DESC LIMIT 1";
 $result = $mysqli->query($query);
 
+// check if there are retrieved dates and set them
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $start_date = new DateTime($row['start_date']);
     $end_date = new DateTime($row['end_date']);
-    $end_date->modify('+1 day');
+    $end_date->modify('+1 day'); // including last day
 } else {
     echo "No defense schedule dates are set.";
     exit;
 }
 
+// fetch list of available rooms from the database
 $roomQuery = "SELECT * FROM available_rooms";
 $roomResult = $mysqli->query($roomQuery);
 
-$rooms = [];
+$rooms = []; // array to store room data
 if ($roomResult) {
     while ($row = $roomResult->fetch_assoc()) {
-        $rooms[] = $row;
+        $rooms[] = $row; // populating the array with room data
     }
 }
 
+// defining a array of timeslots (50 minutes oral session)
 $timeslots = ["08:00-08:50", "09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00-12:50", "13:00-13:50", "14:00-14:50", "15:00-15:50", "16:00-16:50"];
 ?>
 
@@ -146,16 +151,16 @@ $timeslots = ["08:00-08:50", "09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00
             display: inline-block;
             width: 35px;
             height: 35px;
-            background-color: #007bff; /* Bootstrap primary color */
+            background-color: #007bff;
             color: white;
             text-align: center;
-            line-height: 30px; /* Vertically center the "+" */
+            line-height: 30px;
             border-radius: 5px;
             cursor: pointer;
         }
         .add-room-input {
             display: inline-block;
-            width: calc(100% - 45px); /* Adjust width to fit button */
+            width: calc(100% - 45px);
         }
         .delete-icon {
             color: #d9534f; 
@@ -163,11 +168,11 @@ $timeslots = ["08:00-08:50", "09:00-09:50", "10:00-10:50", "11:00-11:50", "12:00
         }
         .delete-icon i.fa, .delete-icon i.fas {
             font-size: 1.5rem; 
-            margin-left: auto; /* Aligns the icon to the right */
+            margin-left: auto;
         }
         .list-group-item {
             display: flex;
-            justify-content: space-between; /* Ensures space between room name and icon */
+            justify-content: space-between;
         }
         .divider {
             border-top: 1px solid #ccc;

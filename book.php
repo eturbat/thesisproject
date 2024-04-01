@@ -1,17 +1,19 @@
 <?php
+// session to manage user sessions throughout the app
 session_start();
 
+// checks for the presence of an availableSlots GET parameter, processes it to display the available slots for booking if provided
 if(isset($_GET['availableSlots'])) {
-    $availableSlots = explode(',', $_GET['availableSlots']);
-    echo "<pre>Available Slots: ";
-    print_r($availableSlots);
-    echo "</pre>";
+    $availableSlots = explode(',', $_GET['availableSlots']); // Convert string to array
 } else {
     $availableSlots = [];
 }
 
+// db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+// includes and calls a function from an external script (student_sessionValidator.php) to validate the user's session 
+// this is likely a security measure to make sure that the user is authorized to make bookings
 require_once 'student_sessionValidator.php';
 validateSession($mysqli);
 
@@ -22,7 +24,7 @@ $date = isset($_GET['date']) ? $_GET['date'] : '';
 $first_reader = isset($_GET['first_reader']) ? $_GET['first_reader'] : '';
 $second_reader = isset($_GET['second_reader']) ? $_GET['second_reader'] : '';
 
-// Fetch intersected availability for selected professors
+// fetch intersected availability for selected professors on a specific date
 $intersectedAvailabilityQuery = "SELECT r.name, r.timeslot FROM rooms r
                                   JOIN professors p1 ON r.date = p1.date AND r.timeslot = p1.timeslot AND p1.name = ?
                                   JOIN professors p2 ON r.date = p2.date AND r.timeslot = p2.timeslot AND p2.name = ?
@@ -38,6 +40,8 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// fetch booked slots for selected professors on the specific date
+// this information is used to prevent double bookings.
 $professorBookingsQuery = "SELECT timeslot FROM bookings WHERE date = ? AND (reader_one IN (?, ?) OR reader_two IN (?, ?))";
 $stmt = $mysqli->prepare($professorBookingsQuery);
 $stmt->bind_param('sssss', $date, $first_reader, $second_reader, $first_reader, $second_reader);
@@ -52,7 +56,7 @@ $stmt->close();
 
 $bookings = [];
 
-// Fetch bookings for the selected date
+// fetch bookings for the selected date, it retrieves all bookings for the selected date to display or process further, specifically fetching the room and timeslot of each booking.
 $bookingsQuery = "SELECT room, timeslot FROM bookings WHERE date = ?";
 $stmt = $mysqli->prepare($bookingsQuery);
 $stmt->bind_param('s', $date);
@@ -65,13 +69,14 @@ while ($row = $bookingsResult->fetch_assoc()) {
 $stmt->close();
 
 
-// // Remove booked slots from available slots
+// // remove booked slots from available slots
 // foreach ($roomsAvailability as $roomName => &$timeslots) {
 //     if (isset($bookedSlots[$roomName])) {
 //         $timeslots = array_diff($timeslots, $bookedSlots[$roomName]);
 //     }
 // }
 
+// handling form submission for booking
 if(isset($_POST['submit'])){
     $thesis = $_POST['thesis'];
     $name = $_POST['name'];
@@ -82,16 +87,17 @@ if(isset($_POST['submit'])){
     $reader_one = $_POST['reader_one'];
     $reader_two = $_POST['reader_two'];
 
-    // Check if any of the selected professors are already booked for this timeslot
+    // check if any of the selected professors are already booked for this timeslot
     $professorBookedQuery = "SELECT * FROM bookings WHERE date=? AND timeslot=? AND (reader_one=? OR reader_two=?)";
     $stmt = $mysqli->prepare($professorBookedQuery);
     $stmt->bind_param('ssss', $date, $timeslot, $reader_one, $reader_two);
     if($stmt->execute()){
         $result = $stmt->get_result();
         if($result->num_rows > 0){
+            // show red button (danger alert) if professors are not available
             $msg = "<div class='alert alert-danger'>One or more professors are not available at this time.</div>";
         } else {
-            // Proceed with booking
+            // insert the booking into the database if professors are available
             $stmt = $mysqli->prepare("INSERT INTO bookings (name, email, date, timeslot, room, reader_one, reader_two, thesis) VALUES (?,?,?,?,?,?,?,?)");
             $stmt->bind_param('ssssssss', $name, $email, $date, $timeslot, $room, $reader_one, $reader_two, $thesis);
             
@@ -99,13 +105,13 @@ if(isset($_POST['submit'])){
                 header('Location: success.php?name='.urlencode($name).'&email='.urlencode($email).'&date='.urlencode($date).'&timeslot='.urlencode($timeslot).'&room='.urlencode($room).'&first_reader='.urlencode($first_reader).'&second_reader='.urlencode($second_reader).'&thesis='.urlencode($thesis));
                 exit;
             } else {
-                // Handle error in booking
+                // handle error in booking
                 $msg = "<div class='alert alert-danger'>Error in booking</div>";
             }
             $stmt->close();
         }
     } else {
-        // Handle error in query execution
+        // handle error in query execution
         $msg = "<div class='alert alert-danger'>Error in query execution</div>";
     }
     $mysqli->close();
@@ -273,6 +279,8 @@ if(isset($_POST['submit'])){
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script>
+        // click event listener to all elements with the class 'book'. 
+        //this is for displaying all necessary infos on confirmation modal
         $(".book").click(function(){
             var timeslot = $(this).attr('data-timeslot');
             var room = $(this).attr('data-room');

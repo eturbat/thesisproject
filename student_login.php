@@ -1,5 +1,7 @@
 <?php
+// redirect to login page if the professor is not logged in
 session_start();
+// db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
 $error = '';
@@ -7,16 +9,16 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
-    // Adjusted to fetch the plain password instead of a hashed password
+    // adjusted to fetch the plain password instead of a hashed password
     $stmt = $mysqli->prepare("SELECT password FROM panel_passwords WHERE panel = 'student'");
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
 
-    // Direct comparison instead of using password_verify()
+    // direct comparison instead of using password_verify()
     if ($row && $password === $row['password']) {
         $_SESSION['student_logged_in'] = true;
-        // Fetch and store the last updated timestamp
+        // fetch and store the last updated timestamp
         $stmt = $mysqli->prepare("SELECT last_updated FROM panel_passwords WHERE panel = 'student'");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -108,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+// password hide and show toggle function
 $(document).ready(function() {
     $('.toggle-password').click(function() {
         $(this).toggleClass('fa-eye fa-eye-slash');

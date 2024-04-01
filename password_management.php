@@ -1,5 +1,11 @@
 <?php
-// Assuming $mysqli is already connected
+
+//db connection
+$mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
+
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $panel = $_POST['panel'];
@@ -23,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $mysqli->prepare($updateQuery);
     $stmt->bind_param("ss", $password, $panel);
     $stmt->execute();
-
+    // admin updated action alert
     echo "<div class='alert alert-success'>Password for $panel panel updated successfully.</div>";
 }
 
@@ -57,7 +63,7 @@ while ($row = $fetchResult->fetch_assoc()) {
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            width: 60%; /* Adjusted width for better centering */
+            width: 60%;
             margin-left: auto;
             margin-right: auto;
         }
@@ -122,13 +128,19 @@ while ($row = $fetchResult->fetch_assoc()) {
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+    // pass hide and show toggle function
     $(document).ready(function() {
+        // click event listener on all elements with class 'toggle-password'
         $(".toggle-password").click(function() {
+            // toggle the classes 'fa-eye' and 'fa-eye-slash' for the clicked element
             $(this).toggleClass("fa-eye fa-eye-slash");
             var input = $($(this).attr("toggle"));
+            // Check the current type of the input field (password or text)
             if (input.attr("type") === "password") {
+                // if it's a password field, change its type to text to show the password
                 input.attr("type", "text");
             } else {
+                // if it's a text field, change its type back to password to hide the password
                 input.attr("type", "password");
             }
         });

@@ -12,7 +12,7 @@ $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 require_once 'student_sessionValidator.php';
 validateSession($mysqli);
 
-// Fetch professors for dropdowns
+// fetch professors for dropdowns
 $professors = [];
 $result = $mysqli->query("SELECT DISTINCT name FROM professors");
 while ($row = $result->fetch_assoc()) {

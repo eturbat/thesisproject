@@ -1,11 +1,15 @@
 <?php
 
+// checks if a states parameter is present in the url. Based on the status, it prepares a message and an alert type to be displayed to the user. 
+// this could be a result of adding, editing, or deleting a professor, or an error message.
 if (isset($_GET['status'])) {
     $status = $_GET['status'];
     $alertType = '';
     $message = '';
 
+    // switch statement to handle different status values and set the appropriate message and alert type
     switch ($status) {
+        // cases for different statuses, setting the appropriate alert type and message
         case 'professoradded':
             $alertType = 'alert-success';
             $message = 'Professor added successfully!';
@@ -24,53 +28,59 @@ if (isset($_GET['status'])) {
             break;
     }
 
+    // displays the alert message if one is set
     if ($message !== '') {
         echo "<div class='alert $alertType' role='alert'>$message</div>";
     }
 }
 
+// making a database connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
-// Check for database connection error
+// check for database connection error
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-// Function to fetch all professors
+// function to fetch all professors
+// this function queries the 'professor_list' table in the database to retrieve all professor records and returns them as an array.
 function fetchAllProfessors($mysqli) {
     $query = "SELECT * FROM professor_list";
     $result = $mysqli->query($query);
 
-    $professors = [];
+    $professors = []; // initializing an array to hold professor data
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $professors[] = $row;
+            $professors[] = $row; // adding each row to the professors array
         }
     }
     return $professors;
 }
 
+// checks if the request method is POST, indicating form submission. 
+// if so, it processes the form data to add a new professor name to the 'professor_list' table. 
+// upon successful insertion, it redirects to the 'admin_panel.php' page with a success status; otherwise, it redirects with an error status.
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $newProfessorName = $_POST['newProfessorName'];
 
     // Prepare and bind
     $stmt = $mysqli->prepare("INSERT INTO professor_list (name) VALUES (?)");
-    $stmt->bind_param("s", $newProfessorName);
+    $stmt->bind_param("s", $newProfessorName); // s indicates a string parameter
 
     if ($stmt->execute()) {
-        // Redirect back to professor availability page with success message
+        // redirect back to professor availability page with success message
         header('Location: admin_panel.php?page=add_professor&status=professoradded');
     } else {
-        // Handle error
+        // with error message
         header('Location: admin_panel.php?page=add_professor&status=professor_error');
     }
 
     $stmt->close();
 }
-
+// fetch all professors to be used later in calling them on interface (for example, to display in a list on the page)
 $professors = fetchAllProfessors($mysqli);
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>

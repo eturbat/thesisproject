@@ -1,16 +1,17 @@
 <?php
+// db connection
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
-// Check for database connection error
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
+// handle status messages based on the status case
 if (isset($_GET['status'])) {
     $status = $_GET['status'];
     $alertType = '';
     $message = '';
-
+    // setting message and alert type based on the status value
     switch ($status) {
         case 'date_success':
             $alertType = 'alert-success';
@@ -35,27 +36,28 @@ if (isset($_GET['status'])) {
 
     }
 }
-// Fetch the current set date range
+// fetch the current set date range
 $currentDateQuery = "SELECT * FROM defense_schedule LIMIT 1";
 $currentDateResult = $mysqli->query($currentDateQuery);
 $currentDate = $currentDateResult->fetch_assoc();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if a date range is already set
+    // check if a date range is already set
     if ($currentDate) {
         header('Location: admin_panel.php?page=set_dates&status=date_exists');
         exit;
     }
 
-    // Retrieve form data
+    // retrieve and validate start and end dates from the form submission
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
 
-    // Validate dates
+    // redirect with an invalid status if dates are not set correctly
     if (!$start_date || !$end_date || $start_date > $end_date) {
         header('Location: admin_panel.php?page=set_dates&status=date_invalid');
         exit;
     } else {
+        // insert new date range into the defense_schedule table
         $query = "INSERT INTO defense_schedule (start_date, end_date) VALUES (?, ?)";
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ss", $start_date, $end_date);
@@ -70,28 +72,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// handle deletion of the current date range and associated datas
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
-    // Begin transaction to ensure data integrity
     $mysqli->begin_transaction();
     try {
+        // these tables to be cleared if timeframe deletes
         $tables = ['defense_schedule', 'bookings', 'available_rooms', 'professors', 'professor_list', 'rooms'];
         foreach ($tables as $table) {
             $query = "DELETE FROM $table";
             $mysqli->query($query);
         }
 
-        // Commit the transaction if all deletions are successful
+        // commit the transaction if all deletions are successful
         $mysqli->commit();
         header('Location: admin_panel.php?page=set_dates&status=date_deleted');
         exit;
     } catch (mysqli_sql_exception $exception) {
-        // Rollback the transaction in case of any error
+        // rollback the transaction in case of any error
         $mysqli->rollback();
         header('Location: admin_panel.php?page=set_dates&status=date_error');
         exit;
     }
 }
 
+// close db connection
 $mysqli->close();
 ?>
 
@@ -232,6 +236,7 @@ $mysqli->close();
     <?php endif; ?>
 </div>
 <script>
+    // used JQuery datepicker calendar lib for picking the end and start date of orals
     $(function() {
         $("#from").datepicker({
             dateFormat: "yy-mm-dd",

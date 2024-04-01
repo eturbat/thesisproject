@@ -1,6 +1,10 @@
 <?php
+//db connnecting
 $mysqli = new mysqli('localhost', 'root', '', 'bookingcalendar');
 
+// fetchAllBookings function retrieves all bookings from the bookings table. 
+// If a specific professor is selected (and is not 'All'), it fetches bookings where either reader_one or reader_two matches the selected professor. 
+// otherwise, it fetches all bookings. It returns an array of booking information.
 function fetchAllBookings($mysqli, $selectedProfessor = '') {
     if (!empty($selectedProfessor) && $selectedProfessor != 'All') {
         $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reader_one = ? OR reader_two = ?");
@@ -11,13 +15,15 @@ function fetchAllBookings($mysqli, $selectedProfessor = '') {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $bookings = [];
+    $bookings = []; // Initializing an array to hold professor data
     while ($row = $result->fetch_assoc()) {
-        $bookings[] = $row;
+        $bookings[] = $row; // Adding each row to the bookings array
     }
     return $bookings;
 }
 
+// executes a query to fetch a list of all distinct professors who are listed as either reader_one or reader_two in any booking. 
+// this list is used to populate a dropdown for filtering bookings by professor.
 $professorsQuery = "SELECT DISTINCT reader_one FROM bookings UNION SELECT DISTINCT reader_two FROM bookings ORDER BY reader_one";
 $professorsResult = $mysqli->query($professorsQuery);
 
@@ -26,6 +32,7 @@ while ($row = $professorsResult->fetch_assoc()) {
     $professors[] = $row['reader_one'];
 }
 
+// checks if a professor is selected through a GET parameter and fetches bookings accordingly using the fetchAllBookings function. 
 $selectedProfessor = isset($_GET['professor']) ? $_GET['professor'] : 'All';
 $bookings = fetchAllBookings($mysqli, $selectedProfessor);
 ?>
@@ -46,20 +53,19 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
         }
         .navbar-nav {
             display: flex;
-            justify-content: center; /* Center navbar items */
+            justify-content: center;
             width: 100%;
         }
         .navbar-nav li {
-            margin: 0 10px; /* Equal margin on both sides */
+            margin: 0 10px;
         }
         .navbar-nav li a {
             border-radius: 4px;
         }
         .navbar-nav .active a {
-            background-color: #5cb85c; /* Active item background color */
+            background-color: #5cb85c;
             color: white !important;
         }
-        /* Ensure the navbar doesn't collapse in mobile view */
         @media (max-width: 767px) {
             .navbar-nav {
                 flex-direction: row;
@@ -85,6 +91,8 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
     </style>
 </head>
 <body>
+<!-- a navigation bar that allows navigating between different features of the admin panel (Home, Manage Dates, Manage Rooms, Manage Professors, Manage Passwords). 
+It dynamically includes .php files based on the selected page, allowing for modular management of different administrative functionalities. -->
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
         <ul class="nav navbar-nav">
@@ -116,6 +124,7 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
 
     <div class="container">
         <?php
+        // checks for roomStatus GET parameter to display success or error messages related to room management operations
         if (isset($_GET['roomStatus'])) {
             $roomStatus = $_GET['roomStatus'];
             $alertType = '';
@@ -137,7 +146,7 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
                 echo "<div class='alert $alertType' role='alert'>$message</div>";
             }
         }
-
+        // depending on the page GET parameter from navbar, it includes specific .php files for managing dates, room availability, professors, and passwords. 
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
             switch ($page) {
@@ -154,6 +163,7 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
                     include('password_management.php');
                     break;
             }
+        // if no page is specified, it defaults to displaying the bookings table(default page for admin panel)
         } else {
             echo '<div id="bookingsTable" class="table-responsive">'; 
             echo 
@@ -213,6 +223,8 @@ $bookings = fetchAllBookings($mysqli, $selectedProfessor);
         ?>
     </div>
     <script>
+    // generatePDF function, which is used to generate a pdf version of the bookings table. 
+    // rhis function uses the html2pdf library to convert html table data into a downloadable pdf document.
     function generatePDF() {
         const element = document.getElementById("bookingsTable");
         html2pdf().from(element).set({
